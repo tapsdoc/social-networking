@@ -32,3 +32,8 @@ npx nx run-many -t build e2e lint test serve -p social-networking auth posts ser
 
 Run `npx nx graph` to show the graph of the workspace.
 It will show tasks that you can run with Nx.
+
+## TODO
+
+Implement state management for posts feature
+Implement state management for sign up feature
