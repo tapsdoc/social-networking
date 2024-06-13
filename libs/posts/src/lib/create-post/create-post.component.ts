@@ -44,7 +44,6 @@ export class CreatePostComponent implements OnInit {
 				this.id = +params['id'];
 				this.editMode = params['id'] != null;
 				if (this.editMode) {
-					console.log('yes');
 					this.postsService.selectedPost
 						.subscribe({
 							next: (post: PostWithVotes)=> {
@@ -105,9 +104,9 @@ export class CreatePostComponent implements OnInit {
 	private initForm(){
 		if (this.editMode) {
 			this.form = this.fb.group({
-				'title': new FormControl(this.post.title, Validators.required),
-				'content': new FormControl(this.post.content, Validators.required),
-				'published': new FormControl(this.post.published)
+				'title': new FormControl('this.post.title', Validators.required),
+				'content': new FormControl('this.post.content', Validators.required),
+				'published': new FormControl('this.post.published')
 			});
 		} else {
 			this.form = this.fb.group({
