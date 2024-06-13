@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PostsService } from '@social-networking/services';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { PostsEntity, PostsState } from '@social-networking/posts';
@@ -21,7 +20,6 @@ export class PostCardComponent {
 	isOpen = false;
 	
 	constructor(
-		private postsService: PostsService,
 		private router: Router,
 		private route: ActivatedRoute,
 		private store: Store<PostsState>,
