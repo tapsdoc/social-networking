@@ -45,7 +45,6 @@ export class PostCardComponent {
 	
 	onEdit() {
 		this.postsService.selectedPost.emit(this.post);
-		console.log(this.post);
 		this.router.navigate(
 			[`${this.post.id}/edit`],
 			{ relativeTo: this.route }

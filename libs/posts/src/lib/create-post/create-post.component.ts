@@ -91,18 +91,15 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 			error: err => {
 				this.type = 'error';
 				
-				if(err.statusText === 'Unknown Error') {
+				if (err.statusText === 'Unknown Error') {
 					this.message = 'An error occurred!';
 				} else this.message = err.error?.detail;
-				this.loading = false;
 				console.log(err);
 			},
-			complete: ()=> {
-				this.loading = false;
-				this.type = null;
-				this.message = null;
-			}
 		});
+		this.loading = false;
+		this.type = null;
+		this.message = null;
 	}
 	
 	onCancel() {
@@ -118,7 +115,6 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 			});
 		} else {
 			this.form = this.fb.group({
-				
 				title: new FormControl('', Validators.required),
 				content: new FormControl('', Validators.required),
 				published: new FormControl(true)
