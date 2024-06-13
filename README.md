@@ -4,6 +4,8 @@
 
 ## Requirements
 
+Node version 20 and above
+
 Run `npm add --global nx@latest` to install Nx globally
 
 ## Install node modules
