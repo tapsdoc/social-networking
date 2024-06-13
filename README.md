@@ -35,5 +35,6 @@ It will show tasks that you can run with Nx.
 
 ## TODO
 
+Complete the edit functionality for posts
 Implement state management for posts feature
 Implement state management for sign up feature
