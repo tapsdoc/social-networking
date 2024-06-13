@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PostsService, PostWithVotes } from '@social-networking/services';
-import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Params, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { PostsState } from '../store/posts.reducer';
-import { map, Subscription } from 'rxjs';
-import { selectPostsState } from '../store/posts.selectors';
+import { Subscription } from 'rxjs';
+import { selectPost } from '../store/posts.selectors';
+import { initGetPost } from '../store/posts.actions';
 import { PostsEntity } from '../store/posts.models';
 
 @Component({
@@ -15,14 +15,12 @@ import { PostsEntity } from '../store/posts.models';
 	templateUrl: './post-detail.component.html',
 	styleUrl: './post-detail.component.css'
 })
-export class PostDetailComponent implements OnInit {
+export class PostDetailComponent implements OnInit, OnDestroy {
 	id!: number;
-	post!: PostWithVotes;
+	post!: PostsEntity;
 	private subs!: Subscription;
 	
 	constructor(
-		private postsService: PostsService,
-      private router: Router,
 		private route: ActivatedRoute,
 		private store: Store<PostsState>,
 	) { }
@@ -31,17 +29,9 @@ export class PostDetailComponent implements OnInit {
 		this.route.params.subscribe(
 			(params: Params) => {
 				this.id = +params['id'];
+				this.store.dispatch(initGetPost({ id: this.id }));
 				
-				this.subs = this.store.select(selectPostsState)
-				.pipe(
-					map(state => {
-						const { entities } = state;
-						return Object.values(entities) as PostsEntity[];
-					}),
-					map(posts  => posts.find(post =>
-						post.id === this.id
-					))
-				)
+				this.subs = this.store.select(selectPost)
 				.subscribe(post => {
 					if (post) this.post = post;
 				});
@@ -49,7 +39,7 @@ export class PostDetailComponent implements OnInit {
 		);
 	}
 	
-	onEdit() {
-		this.router.navigate(['edit'], { relativeTo: this.route }).then();
+	ngOnDestroy() {
+		this.subs.unsubscribe();
 	}
 }

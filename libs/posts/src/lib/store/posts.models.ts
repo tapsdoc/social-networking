@@ -15,5 +15,17 @@ export interface PostsEntity {
 	owner_id: number;
 	published?: boolean;
 	title: string;
-	votes: number;
+	votes?: number;
+}
+
+export interface PostCreateEntity {
+	content: string;
+	published?: boolean;
+	title: string;
+}
+
+export interface PostUpdateEntity {
+	content: (string | null);
+	published?: (boolean | null);
+	title: (string | null);
 }

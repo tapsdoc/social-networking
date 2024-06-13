@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { EventEmitter, Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { BaseService } from '../base-service';
@@ -25,18 +25,13 @@ import { updatePostPostsPostIdPut } from '../fn/posts/update-post-posts-post-id-
 import { UpdatePostPostsPostIdPut$Params } from '../fn/posts/update-post-posts-post-id-put';
 import { upvotePostPostsPostIdUpvotePut } from '../fn/posts/upvote-post-posts-post-id-upvote-put';
 import { UpvotePostPostsPostIdUpvotePut$Params } from '../fn/posts/upvote-post-posts-post-id-upvote-put';
-import { Store } from '@ngrx/store';
-import { loadPostsSuccess, PostsState } from '@social-networking/posts';
 
 @Injectable({ providedIn: 'root' })
 export class PostsService extends BaseService {
 	
-	selectedPost = new EventEmitter<PostWithVotes>();
-	
 	constructor(
 		config: ApiConfiguration,
 		http: HttpClient,
-		private store: Store<PostsState>,
 	) {
 		super(config, http);
 	}

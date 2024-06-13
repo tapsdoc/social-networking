@@ -8,6 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 export const POSTS_FEATURE_KEY = 'posts';
 
 export interface PostsState extends EntityState<PostsEntity> {
+	post: PostsEntity | null;
 	isLoading: boolean;
 	selectedId?: string | number; // which Posts record has been selected
 	loaded: boolean; // has the Posts list been loaded
@@ -22,6 +23,7 @@ export const postsAdapter: EntityAdapter<PostsEntity> =
 	createEntityAdapter<PostsEntity>();
 
 export const initialPostsState: PostsState = postsAdapter.getInitialState({
+	post: null,
 	isLoading: false,
 	loaded: false
 });
@@ -31,6 +33,8 @@ const reducer = createReducer(
 	on(PostsActions.initPosts, (state) => ({
 		...state,
 		loaded: false,
+		selectedId: undefined,
+		post: null,
 		isLoading: true,
 		error: null,
 	})),
@@ -39,11 +43,52 @@ const reducer = createReducer(
 			...state,
 			isLoading: false,
 			loaded: true,
-		})
-	),
+	})),
+	on(PostsActions.initGetPost, (state, { id }) => ({
+		...state,
+		selectedId: id,
+		isLoading: true,
+		loaded: false,
+		error: null,
+	})),
+	on(PostsActions.loadPostSuccess, (state, { post }) => ({
+		...state,
+		post: post,
+		isLoading: false,
+		loaded: true
+	})),
+	on(PostsActions.initAddPost, (state) => ({
+		...state,
+		selectedId: undefined,
+		isLoading: true,
+		loaded: false,
+		error: null,
+	})),
+	on(PostsActions.addPostSuccess, (state, { post }) => ({
+		...state,
+		post: post,
+		isLoading: false,
+		loaded: true
+	})),
+	on(PostsActions.initEditPost, (state, { id }) => ({
+		...state,
+		selectedId: id,
+		isLoading: true,
+		loaded: false,
+		error: null,
+	})),
+	on(PostsActions.editPostSuccess, (state, { post }) => ({
+		...state,
+		post: post,
+		isLoading: false,
+		loaded: true
+	})),
 	on(PostsActions.loadPostsFailure, (state, { error }) => ({
 		...state,
 		isLoading: false,
+		loaded: false,
+		selectedId: undefined,
+		post: null,
 		error
 	}))
 );

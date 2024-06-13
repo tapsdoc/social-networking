@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PostsService, PostWithVotes } from '@social-networking/services';
+import { PostsService } from '@social-networking/services';
 import { Observable } from 'rxjs';
 import { PostCardComponent } from './post-card/post-card.component';
 import { LoadingSpinnerComponent, SnackBarComponent } from '@social-networking/shared-ui';
@@ -8,6 +8,7 @@ import { Store } from '@ngrx/store';
 import { PostsState } from '../store/posts.reducer';
 import { selectAllPosts } from '../store/posts.selectors';
 import { initPosts } from '../store/posts.actions';
+import { PostsEntity } from '../store/posts.models';
 
 @Component({
 	selector: 'lib-posts-list',
@@ -23,7 +24,7 @@ import { initPosts } from '../store/posts.actions';
 })
 export class PostsListComponent implements OnInit {
 	
-	posts$!: Observable<PostWithVotes[]>;
+	posts$!: Observable<PostsEntity[]>;
 	message!: string | null;
 	type!: string | null;
 	
@@ -38,7 +39,7 @@ export class PostsListComponent implements OnInit {
 		this.posts$ = this.store.select(selectAllPosts);
 	}
 	
-	onUpvote(post: PostWithVotes) {
+	onUpvote(post: PostsEntity) {
 		this.postsService.upvotePostPostsPostIdUpvotePut({ post_id: post.id })
 		.subscribe({
 			error: err => {
@@ -54,7 +55,7 @@ export class PostsListComponent implements OnInit {
 		this.message = null;
 	}
 	
-	onDownvote(post: PostWithVotes) {
+	onDownvote(post: PostsEntity) {
 		this.postsService.downvotePostPostsPostIdDownvotePut({
 			post_id: post.id
 		}).subscribe({
@@ -71,7 +72,7 @@ export class PostsListComponent implements OnInit {
 		this.message = null;
 	}
 	
-	onDelete(post: PostWithVotes) {
+	onDelete(post: PostsEntity) {
 		this.postsService.deletePostPostsPostIdDelete({
 			post_id: post.id
 		}).subscribe({
@@ -81,10 +82,10 @@ export class PostsListComponent implements OnInit {
 			},
 			error: err => {
 				this.type = 'error';
-				console.log(err);
+				console.log(err.error);
 				if (err.statusText === 'Unknown Error') {
 					this.message = 'An error occurred!';
-				} else this.message = err.error?.detail;
+				} else this.message = 'Failed to delete';
 			},
 			complete: () => {
 				this.type = null;

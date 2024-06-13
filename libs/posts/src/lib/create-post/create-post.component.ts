@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Post, PostsService, PostWithVotes } from '@social-networking/services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, Observable, Subscription } from 'rxjs';
+import { map, Subscription } from 'rxjs';
 import { LoadingComponent, SnackBarComponent } from '@social-networking/shared-ui';
 import { Store } from '@ngrx/store';
 import { PostsState } from '../store/posts.reducer';
-import { selectPostsState } from '../store/posts.selectors';
+import { selectPost, selectPostsState } from '../store/posts.selectors';
+import { initAddPost, initEditPost, initGetPost } from '../store/posts.actions';
 import { PostsEntity } from '../store/posts.models';
 
 @Component({
@@ -25,17 +25,16 @@ import { PostsEntity } from '../store/posts.models';
 export class CreatePostComponent implements OnInit, OnDestroy {
 	
 	form!: FormGroup;
-	message!: string | null;
+	error!: string | null;
 	type!: string | null;
-	loading = false;
+	isLoading = false;
 	id!: number;
 	editMode = false;
-	post!: PostWithVotes;
+	post!: PostsEntity;
 	private subs!: Subscription;
 	
 	constructor(
 		private fb: FormBuilder,
-		private postsService: PostsService,
 		private router: Router,
 		private route: ActivatedRoute,
 		private store: Store<PostsState>,
@@ -46,60 +45,51 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 			params => {
 				this.id = +params['id'];
 				this.editMode = params['id'] != null;
+				
 				if (this.editMode) {
-					this.subs = this.store.select(selectPostsState)
-					.pipe(
-						map(state => {
-							const { entities } = state;
-							return Object.values(entities) as PostsEntity[];
-						}),
-						map(posts  => posts.find(post =>
-							post.id === this.id
-						))
-					)
+					this.store.dispatch(initGetPost({ id: this.id }));
+					this.subs = this.store.select(selectPost)
 					.subscribe(post => {
 						if (post) this.post = post;
 					});
 				}
+				
+				this.getPostState();
 				this.initForm();
 			}
 		);
 	}
 	
-	onSubmit() {
-		this.loading = true;
-		console.log(this.form.value);
-		let postObs: Observable<PostWithVotes | Post>;
-		if (this.editMode) {
-			postObs = this.postsService.updatePostPostsPostIdPut({
-				post_id: this.id,
-				body: this.form.value
-			});
-		} else {
-			postObs = this.postsService.createPostPostsPost({
-				body: this.form.value
-			});
-		}
-		
-		postObs.subscribe({
-			next: () => {
-				this.type = 'success';
-				this.message = 'Post published';
-				this.form.reset();
-				this.router.navigate(['/posts']).then();
-			},
-			error: err => {
-				this.type = 'error';
-				
-				if (err.statusText === 'Unknown Error') {
-					this.message = 'An error occurred!';
-				} else this.message = err.error?.detail;
-				console.log(err);
-			},
+	private getPostState() {
+		this.subs = this.store.select(selectPostsState)
+		.pipe(
+			map(state => {
+				const { isLoading, error } = state;
+				return { isLoading, error };
+			})
+		).subscribe({
+			next: (state) => {
+				this.isLoading = state.isLoading;
+				if (state.error) {
+					this.type = 'error';
+					if (state.error.statusText === 'Unknown Error') {
+						this.error = 'An error occurred!';
+					} else this.error = state.error.error?.detail;
+					console.log(state.error);
+				}
+			}
 		});
-		this.loading = false;
-		this.type = null;
-		this.message = null;
+	}
+	
+	onSubmit() {
+		if (this.editMode) {
+			this.store.dispatch(initEditPost({
+				id: this.id,
+				payload: this.form.value
+			}));
+		} else {
+			this.store.dispatch(initAddPost({ payload: this.form.value }));
+		}
 	}
 	
 	onCancel() {
