@@ -14,7 +14,14 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@social-networking/auth": ["libs/auth/src/index.ts"],
+      "@social-networking/post-detail": ["libs/post-detail/src/index.ts"],
+      "@social-networking/posts": ["libs/posts/src/index.ts"],
+      "@social-networking/services": ["libs/services/src/index.ts"],
+      "@social-networking/shared-ui": ["libs/shared/ui/src/index.ts"],
+      "@social-networking/users": ["libs/users/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

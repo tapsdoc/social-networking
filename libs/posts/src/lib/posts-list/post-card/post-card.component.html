@@ -1,0 +1,77 @@
+<article class="flex max-w-xl max-h-56 flex-col items-start justify-between">
+  <div class="flex flex-col w-full min-[1020px]:h-screen">
+    <div class="flex items-center justify-between space-x-4 text-xs">
+      <div class="flex items-center space-x-4">
+        <p class="relative z-10 font-medium text-lg text-gray-600">
+          {{ post.owner.username }}
+        </p>
+        <time datetime="2020-03-16" class="text-gray-500">{{ post.created_at | date:'medium' }}</time>
+      </div>
+      <div class="relative inline-block text-left">
+        <div>
+          <button
+            (click)="toggleDropdown()"
+            type="button" class="dropdown-btn"
+            id="menu-button"
+            aria-expanded="true"
+            aria-haspopup="true"
+          >
+            <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+            </svg>
+          </button>
+        </div>
+        <div
+          [ngClass]="{ 'hidden': !isOpen }"
+          id="dropdown"
+          class="absolute right-0 z-10 w-28 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+          role="menu"
+          aria-orientation="vertical"
+          aria-labelledby="menu-button"
+          tabindex="-1"
+        >
+          <div class="py-1" role="none">
+            <a
+              (click)="onEdit()"
+              class="cursor-pointer block px-4 py-2 text-sm text-gray-700"
+              role="menuitem"
+              tabindex="-1"
+              id="menu-item-0"
+            >Edit</a>
+            <a (click)="onDelete()" class="cursor-pointer block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-1">Delete</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="group relative">
+      <h3 class="mt-3 text-lg  leading-6 text-gray-900 group-hover:text-gray-600">
+        <a (click)="onSelect()" class="cursor-pointer">
+          <span class="absolute inset-0"></span>
+          {{ post.title }}
+        </a>
+      </h3>
+      <p class="mt-5 line-clamp-3 text-sm leading-6 text-gray-600"> {{ post.content }}</p>
+    </div>
+  </div>
+  <div class="flex sm:mt-4 space-x-4 items-center justify-between text-gray-500">
+    <div class="flex items-center space-x-2">
+      <button
+        (click)="onUpvote()"
+        class="flex justify-center items-center gap-2 px-2 hover:bg-gray-50 rounded-full p-1"
+      >
+        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11c.889-.086 1.416-.543 2.156-1.057a22.323 22.323 0 0 0 3.958-5.084 1.6 1.6 0 0 1 .582-.628 1.549 1.549 0 0 1 1.466-.087c.205.095.388.233.537.406a1.64 1.64 0 0 1 .384 1.279l-1.388 4.114M7 11H4v6.5A1.5 1.5 0 0 0 5.5 19v0A1.5 1.5 0 0 0 7 17.5V11Zm6.5-1h4.915c.286 0 .372.014.626.15.254.135.472.332.637.572a1.874 1.874 0 0 1 .215 1.673l-2.098 6.4C17.538 19.52 17.368 20 16.12 20c-2.303 0-4.79-.943-6.67-1.475"/>
+        </svg>
+      </button>
+      <button
+        (click)="onDownvote()"
+        class="flex justify-center items-center gap-2 px-2 hover:bg-gray-50 rounded-full p-1"
+      >
+        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13c-.889.086-1.416.543-2.156 1.057a22.322 22.322 0 0 0-3.958 5.084 1.6 1.6 0 0 1-.582.628 1.549 1.549 0 0 1-1.466.087 1.587 1.587 0 0 1-.537-.406 1.666 1.666 0 0 1-.384-1.279l1.389-4.114M17 13h3V6.5A1.5 1.5 0 0 0 18.5 5v0A1.5 1.5 0 0 0 17 6.5V13Zm-6.5 1H5.585c-.286 0-.372-.014-.626-.15a1.797 1.797 0 0 1-.637-.572 1.873 1.873 0 0 1-.215-1.673l2.098-6.4C6.462 4.48 6.632 4 7.88 4c2.302 0 4.79.943 6.67 1.475"/>
+        </svg>
+      </button>
+    </div>
+    <div> {{ post.votes }} votes</div>
+  </div>
+</article>
