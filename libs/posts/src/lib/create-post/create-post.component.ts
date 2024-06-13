@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Post, PostsService, PostWithVotes } from '@social-networking/services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 import { LoadingComponent, SnackBarComponent } from '@social-networking/shared-ui';
 import { Store } from '@ngrx/store';
 import { PostsState } from '../store/posts.reducer';
+import { selectPostsState } from '../store/posts.selectors';
+import { PostsEntity } from '../store/posts.models';
 
 @Component({
 	selector: 'lib-create-post',
@@ -20,7 +22,7 @@ import { PostsState } from '../store/posts.reducer';
 	templateUrl: './create-post.component.html',
 	styleUrl: './create-post.component.css'
 })
-export class CreatePostComponent implements OnInit {
+export class CreatePostComponent implements OnInit, OnDestroy {
 	
 	form!: FormGroup;
 	message!: string | null;
@@ -29,6 +31,7 @@ export class CreatePostComponent implements OnInit {
 	id!: number;
 	editMode = false;
 	post!: PostWithVotes;
+	private subs!: Subscription;
 	
 	constructor(
 		private fb: FormBuilder,
@@ -44,14 +47,19 @@ export class CreatePostComponent implements OnInit {
 				this.id = +params['id'];
 				this.editMode = params['id'] != null;
 				if (this.editMode) {
-					this.postsService.selectedPost
-						.subscribe({
-							next: (post: PostWithVotes)=> {
-								this.post = post;
-								console.log(post);
-								this.initForm();
-							}
-						});
+					this.subs = this.store.select(selectPostsState)
+					.pipe(
+						map(state => {
+							const { entities } = state;
+							return Object.values(entities) as PostsEntity[];
+						}),
+						map(posts  => posts.find(post =>
+							post.id === this.id
+						))
+					)
+					.subscribe(post => {
+						if (post) this.post = post;
+					});
 				}
 				this.initForm();
 			}
@@ -104,9 +112,9 @@ export class CreatePostComponent implements OnInit {
 	private initForm(){
 		if (this.editMode) {
 			this.form = this.fb.group({
-				'title': new FormControl('this.post.title', Validators.required),
-				'content': new FormControl('this.post.content', Validators.required),
-				'published': new FormControl('this.post.published')
+				'title': new FormControl(this.post.title, Validators.required),
+				'content': new FormControl(this.post.content, Validators.required),
+				'published': new FormControl(this.post.published)
 			});
 		} else {
 			this.form = this.fb.group({
@@ -116,5 +124,9 @@ export class CreatePostComponent implements OnInit {
 				published: new FormControl(true)
 			});
 		}
+	}
+	
+	ngOnDestroy() {
+		if (this.subs) this.subs.unsubscribe();
 	}
 }

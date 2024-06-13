@@ -14,7 +14,7 @@ import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import * as fromAuth from '@social-networking/auth';
 import * as fromPosts from '@social-networking/posts';
-import { provideRouterStore } from '@ngrx/router-store';
+import * as fromUsers from '@social-networking/users';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 
 export const appConfig: ApplicationConfig = {
@@ -22,7 +22,8 @@ export const appConfig: ApplicationConfig = {
 		provideEffects(),
 		provideStore({
 			[fromAuth.AUTH_FEATURE_KEY]: fromAuth.authReducer,
-			[fromPosts.POSTS_FEATURE_KEY]: fromPosts.postsReducer
+			[fromPosts.POSTS_FEATURE_KEY]: fromPosts.postsReducer,
+			[fromUsers.USERS_FEATURE_KEY]: fromUsers.usersReducer,
 		}),
 		provideStoreDevtools({
 			maxAge: 25, // Retains last 25 states

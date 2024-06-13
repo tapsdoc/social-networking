@@ -12,6 +12,11 @@ export const appRoutes: Route[] = [
 			import('@social-networking/posts').then(m => m.postsRoutes)
 	},
 	{
+		path: 'users',
+		loadChildren: () =>
+			import('@social-networking/users').then(m => m.userRoutes)
+	},
+	{
 		path: '**',
 		loadComponent: () =>
 			import('@social-networking/shared-ui').then((m) => m.NotFoundComponent)

@@ -28,12 +28,17 @@ export const initialPostsState: PostsState = postsAdapter.getInitialState({
 
 const reducer = createReducer(
 	initialPostsState,
+	on(PostsActions.initPosts, (state) => ({
+		...state,
+		loaded: false,
+		isLoading: true,
+		error: null,
+	})),
 	on(PostsActions.loadPostsSuccess, (state, { posts }) =>
 		postsAdapter.setAll(posts, {
 			...state,
 			isLoading: false,
 			loaded: true,
-			error: null
 		})
 	),
 	on(PostsActions.loadPostsFailure, (state, { error }) => ({

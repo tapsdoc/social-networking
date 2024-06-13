@@ -30,13 +30,10 @@ export class AuthEffects {
                      this.authService.logout();
                      return;
                   }
-                  
-                  // this.store.dispatch(loginSuccess({ payload: res.body as AuthResponse }));
                }),
                map(user =>
                   AuthActions.loginSuccess({ payload: user as AuthResponse })),
                catchError(error => {
-                  // console.log(error);
                   return of(AuthActions.loadAuthFailure({ error }))
                })
             )

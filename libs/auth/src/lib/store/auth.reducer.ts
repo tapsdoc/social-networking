@@ -17,7 +17,6 @@ export interface AuthPartialState {
 }
 
 export const initialAuthState: AuthState = {
-	// set initial required properties
 	user: null,
 	error: null,
 	isLoading: false,
@@ -53,6 +52,6 @@ const reducer = createReducer(
    })),
 );
 
-export function authReducer(state: AuthState | undefined, action: Action) {
+export function authReducer(state: AuthState | undefined, action: Action){
 	return reducer(state, action);
 }

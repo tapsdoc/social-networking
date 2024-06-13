@@ -1,11 +1,13 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PostsService, PostWithVotes } from '@social-networking/services';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { PostCardComponent } from './post-card/post-card.component';
 import { LoadingSpinnerComponent, SnackBarComponent } from '@social-networking/shared-ui';
 import { Store } from '@ngrx/store';
 import { PostsState } from '../store/posts.reducer';
+import { selectAllPosts } from '../store/posts.selectors';
+import { initPosts } from '../store/posts.actions';
 
 @Component({
 	selector: 'lib-posts-list',
@@ -19,20 +21,21 @@ import { PostsState } from '../store/posts.reducer';
 	templateUrl: './posts-list.component.html',
 	styleUrl: './posts-list.component.css'
 })
-export class PostsListComponent implements OnInit, OnDestroy {
+export class PostsListComponent implements OnInit {
 	
-	posts: PostWithVotes[] = [];
+	posts$!: Observable<PostWithVotes[]>;
 	message!: string | null;
 	type!: string | null;
-	private subs!: Subscription;
 	
 	constructor(
 		private postsService: PostsService,
-		private store: Store<PostsState>,
-	) { }
+		private store: Store<PostsState>
+	) {
+	}
 	
 	ngOnInit() {
-		this.getPosts();
+		this.store.dispatch(initPosts());
+		this.posts$ = this.store.select(selectAllPosts);
 	}
 	
 	onUpvote(post: PostWithVotes) {
@@ -41,30 +44,31 @@ export class PostsListComponent implements OnInit, OnDestroy {
 			error: err => {
 				this.type = 'error';
 				
-				if(err.statusText === 'Unknown Error') {
+				if (err.statusText === 'Unknown Error') {
 					this.message = 'An error occurred!';
 				} else this.message = err.error?.detail;
 				console.log(err);
 			}
 		});
-		this.type = ''
-		this.message = '';
+		this.type = null;
+		this.message = null;
 	}
 	
 	onDownvote(post: PostWithVotes) {
-		this.postsService.downvotePostPostsPostIdDownvotePut({ post_id: post.id })
-		.subscribe({
+		this.postsService.downvotePostPostsPostIdDownvotePut({
+			post_id: post.id
+		}).subscribe({
 			error: err => {
 				this.type = 'error';
 				
-				if(err.statusText === 'Unknown Error') {
+				if (err.statusText === 'Unknown Error') {
 					this.message = 'An error occurred!';
 				} else this.message = err.error?.detail;
 				console.log(err);
 			}
 		});
-		this.type = '';
-		this.message = '';
+		this.type = null;
+		this.message = null;
 	}
 	
 	onDelete(post: PostWithVotes) {
@@ -74,12 +78,11 @@ export class PostsListComponent implements OnInit, OnDestroy {
 			next: () => {
 				this.type = 'success';
 				this.message = 'Deleted';
-				this.getPosts();
 			},
 			error: err => {
 				this.type = 'error';
-				
-				if(err.statusText === 'Unknown Error') {
+				console.log(err);
+				if (err.statusText === 'Unknown Error') {
 					this.message = 'An error occurred!';
 				} else this.message = err.error?.detail;
 			},
@@ -87,25 +90,6 @@ export class PostsListComponent implements OnInit, OnDestroy {
 				this.type = null;
 				this.message = null;
 			}
-		})
-	}
-	
-	private getPosts() {
-		this.subs = this.postsService.getAllPostsPostsGet()
-		.subscribe({
-			next: posts => {
-				this.posts = posts;
-			},
-			error: err => {
-				this.type = 'error';
-				if (err.statusText === 'Unknown Error') {
-					this.message = 'An error occurred!';
-				} else this.message = err.error?.detail;
-			}
 		});
-	}
-	
-	ngOnDestroy() {
-		this.subs.unsubscribe();
 	}
 }

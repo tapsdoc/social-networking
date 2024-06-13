@@ -28,16 +28,14 @@ export class LoginComponent implements OnInit, OnDestroy {
 	isLoading = false;
 	error!: string | null;
 	type!: string | null;
-	private errorSubs!: Subscription;
-	private loadingSubs!: Subscription;
+	private subs!: Subscription;
 	
 	constructor(
 		private store: Store<AuthState>
-	) {
-	}
+	) { }
 	
 	ngOnInit() {
-		this.errorSubs = this.store.select(selectAuthState)
+		this.subs = this.store.select(selectAuthState)
 		.pipe(
 			map(state => {
 				const { isLoading, error } = state;
@@ -72,7 +70,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 	}
 	
 	ngOnDestroy() {
-		if (this.errorSubs) this.errorSubs.unsubscribe();
-		if (this.loadingSubs) this.loadingSubs.unsubscribe();
+		if (this.subs) this.subs.unsubscribe();
 	}
 }

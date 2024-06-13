@@ -70,9 +70,6 @@ export class PostsService extends BaseService {
 	 */
 	getAllPostsPostsGet(params?: GetAllPostsPostsGet$Params, context?: HttpContext): Observable<Array<PostWithVotes>> {
 		return this.getAllPostsPostsGet$Response(params, context).pipe(
-			tap(res => {
-				this.store.dispatch(loadPostsSuccess({ posts: res.body }));
-			}),
 			map((r: StrictHttpResponse<Array<PostWithVotes>>): Array<PostWithVotes> => r.body)
 		);
 	}
