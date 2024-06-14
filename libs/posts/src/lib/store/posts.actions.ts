@@ -19,8 +19,34 @@ export const initEditPost = createAction(
 	props<{ id: number, payload: PostUpdateEntity }>()
 );
 
+export const initDeletePost = createAction(
+	'[Delete Post] Init',
+	props<{ id: number }>()
+);
+
+export const initUpvote = createAction(
+	'[Upvote] Init',
+	props<{ id: number }>()
+);
+
+export const initDownvote = createAction(
+	'[Downvote] Init',
+	props<{ id: number }>()
+);
+
+export const upvoteSuccess = createAction(
+	'[Posts] Upvote Success',
+	props<{ message: string }>()
+);
+
+export const downvoteSuccess = createAction(
+	'[Posts] Downvote Success',
+	props<{ message: string }>()
+);
+export const deletePostSuccess = createAction('[Posts] Delete Success');
+
 export const editPostSuccess = createAction(
-	'[Posts] Add Post Success',
+	'[Posts] Edit Post Success',
 	props<{ post: PostsEntity }>()
 );
 

@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { PostsService } from '@social-networking/services';
 import { Observable } from 'rxjs';
 import { PostCardComponent } from './post-card/post-card.component';
-import { LoadingSpinnerComponent, SnackBarComponent } from '@social-networking/shared-ui';
+import { SnackBarComponent } from '@social-networking/shared-ui';
 import { Store } from '@ngrx/store';
 import { PostsState } from '../store/posts.reducer';
 import { selectAllPosts } from '../store/posts.selectors';
-import { initPosts } from '../store/posts.actions';
+import { initDeletePost, initPosts } from '../store/posts.actions';
 import { PostsEntity } from '../store/posts.models';
 
 @Component({
@@ -16,8 +16,7 @@ import { PostsEntity } from '../store/posts.models';
 	imports: [
 		CommonModule,
 		PostCardComponent,
-		SnackBarComponent,
-		LoadingSpinnerComponent
+		SnackBarComponent
 	],
 	templateUrl: './posts-list.component.html',
 	styleUrl: './posts-list.component.css'
@@ -39,8 +38,8 @@ export class PostsListComponent implements OnInit {
 		this.posts$ = this.store.select(selectAllPosts);
 	}
 	
-	onUpvote(post: PostsEntity) {
-		this.postsService.upvotePostPostsPostIdUpvotePut({ post_id: post.id })
+	onUpvote(id: number) {
+		this.postsService.upvotePostPostsPostIdUpvotePut({ post_id: id })
 		.subscribe({
 			error: err => {
 				this.type = 'error';
@@ -48,6 +47,9 @@ export class PostsListComponent implements OnInit {
 				if (err.statusText === 'Unknown Error') {
 					this.message = 'An error occurred!';
 				} else this.message = err.error?.detail;
+				if (this.message === 'Already voted') {
+					this.onDownvote(id);
+				}
 				console.log(err);
 			}
 		});
@@ -55,9 +57,9 @@ export class PostsListComponent implements OnInit {
 		this.message = null;
 	}
 	
-	onDownvote(post: PostsEntity) {
+	onDownvote(id: number) {
 		this.postsService.downvotePostPostsPostIdDownvotePut({
-			post_id: post.id
+			post_id: id
 		}).subscribe({
 			error: err => {
 				this.type = 'error';
@@ -72,25 +74,7 @@ export class PostsListComponent implements OnInit {
 		this.message = null;
 	}
 	
-	onDelete(post: PostsEntity) {
-		this.postsService.deletePostPostsPostIdDelete({
-			post_id: post.id
-		}).subscribe({
-			next: () => {
-				this.type = 'success';
-				this.message = 'Deleted';
-			},
-			error: err => {
-				this.type = 'error';
-				console.log(err.error);
-				if (err.statusText === 'Unknown Error') {
-					this.message = 'An error occurred!';
-				} else this.message = 'Failed to delete';
-			},
-			complete: () => {
-				this.type = null;
-				this.message = null;
-			}
-		});
+	onDelete(id: number) {
+		this.store.dispatch(initDeletePost({ id: id }));
 	}
 }

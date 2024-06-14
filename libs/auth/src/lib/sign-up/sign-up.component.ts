@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
 	AbstractControl,
@@ -7,9 +7,14 @@ import {
 	ValidatorFn,
 	Validators
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '@social-networking/services';
+import { RouterLink } from '@angular/router';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { LoadingComponent, SnackBarComponent } from '@social-networking/shared-ui';
+import { selectAuthState } from '../store/auth.selectors';
+import { map, Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { AuthState } from '../store/auth.reducer';
+import { initSignup } from '../store/auth.actions';
 
 @Component({
 	selector: 'lib-sign-up',
@@ -24,20 +29,54 @@ import { LoadingComponent, SnackBarComponent } from '@social-networking/shared-u
 	templateUrl: './sign-up.component.html',
 	styleUrl: './sign-up.component.css'
 })
-export class SignUpComponent implements OnInit {
+export class SignUpComponent implements OnInit, OnDestroy {
 	
 	form!: FormGroup;
-	loading = false;
-	message = '';
-	type = '';
+	isLoading = false;
+	error!: string | null;
+	type!: string | null;
+	private subs!: Subscription;
 	
-	constructor(
-		private authService: AuthService,
-		private router: Router
-	) {
-	}
+	constructor(private store: Store<AuthState>) { }
 	
 	ngOnInit() {
+		this.subs = this.store.select(selectAuthState)
+		.pipe(
+			map(state => {
+				const { isLoading, error } = state;
+				return { isLoading, error };
+			})
+		).subscribe({
+			next: (state) => {
+				this.isLoading = state.isLoading;
+				if (state.error) {
+					this.type = 'error';
+					if(state.error.statusText === 'Unknown Error') {
+						this.error = 'An error occurred!'
+					} else this.error = state.error.error?.detail;
+					console.log(state.error);
+				}
+			}
+		});
+		this.initForm();
+	}
+	
+	onSubmit() {
+		this.store.dispatch(initSignup({ payload: this.form.value }));
+	}
+	
+	private passwordMatchValidator(form: FormGroup) {
+		const password = form.get('password') as AbstractControl;
+		const confirmPassword = form.get('confirmPassword') as AbstractControl;
+		
+		if (password && confirmPassword && password.value !== confirmPassword.value) {
+			confirmPassword.setErrors({ mismatch: true });
+		} else {
+			confirmPassword.setErrors(null);
+		}
+	}
+	
+	private initForm() {
 		this.form = new FormGroup({
 			username: new FormControl(
 				'', [
@@ -62,35 +101,7 @@ export class SignUpComponent implements OnInit {
 		}, { validators: this.passwordMatchValidator as ValidatorFn });
 	}
 	
-	onSubmit() {
-		this.loading = true;
-		this.authService.registerUserAuthRegisterPost({ body: this.form.value })
-			.subscribe({
-				next: () => {
-					this.form.reset();
-					this.router.navigate(['/login']).then();
-				},
-				error: (err)=> {
-					this.type = 'error'
-					
-					if(err.statusText === 'Unknown Error') {
-						this.message = 'An error occurred!'
-					} else this.message = err.error?.detail;
-				},
-		});
-		this.type = '';
-		this.message = '';
-		this.loading = false;
-	}
-	
-	passwordMatchValidator(form: FormGroup) {
-		const password = form.get('password') as AbstractControl;
-		const confirmPassword = form.get('confirmPassword') as AbstractControl;
-		
-		if (password && confirmPassword && password.value !== confirmPassword.value) {
-			confirmPassword.setErrors({ mismatch: true });
-		} else {
-			confirmPassword.setErrors(null);
-		}
+	ngOnDestroy() {
+		this.subs.unsubscribe();
 	}
 }

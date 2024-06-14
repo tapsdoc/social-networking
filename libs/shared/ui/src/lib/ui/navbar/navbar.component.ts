@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { map, Subscription } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { AuthState, logoutSuccess, selectAuthState } from '@social-networking/auth';
-import { AuthService, JwtDecoderService } from '@social-networking/services';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { JwtDecoderService } from '@social-networking/services';
 
 @Component({
 	selector: 'lib-navbar',
@@ -21,13 +23,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
 	private subs!: Subscription;
 	private store = inject(Store<AuthState>);
 	private decoder = inject(JwtDecoderService);
-	private authService = inject(AuthService);
 	
 	ngOnInit() {
 		this.subs = this.store.select(selectAuthState)
 		.pipe(
 			map(state => {
-				// console.log(state);
 				return state.user;
 			})
 		)
@@ -43,7 +43,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
 	
 	onLogout() {
 		this.toggle();
-		// this.authService.logout();
 		this.store.dispatch(logoutSuccess());
 	}
 	

@@ -83,6 +83,20 @@ const reducer = createReducer(
 		isLoading: false,
 		loaded: true
 	})),
+	on(PostsActions.initDeletePost, (state, { id }) => ({
+		...state,
+		selectedId: id,
+		isLoading: true,
+		loaded: false,
+		error: null,
+	})),
+	on(PostsActions.deletePostSuccess, (state ) => (
+		postsAdapter.removeOne(state.selectedId as number, {
+			...state,
+			isLoading: false,
+			selectedId: undefined,
+		})
+	)),
 	on(PostsActions.loadPostsFailure, (state, { error }) => ({
 		...state,
 		isLoading: false,

@@ -2,12 +2,8 @@
 /* eslint-disable */
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, take, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-import { Store } from '@ngrx/store';
-import { AuthState, loginSuccess, logoutSuccess } from '@social-networking/auth';
-import { Router } from '@angular/router';
 import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { RegisterUserAuthRegisterPost$Params, registerUserAuthRegisterPost } from '../fn/auth/register-user-auth-register-post';
@@ -15,8 +11,11 @@ import { StrictHttpResponse } from '../strict-http-response';
 import { User } from '../models/user';
 import { loginUserAuthLoginPost, LoginUserAuthLoginPost$Params } from '../fn/auth/login-user-auth-login-post';
 import { HttpValidationError } from '../models/http-validation-error';
-import { JwtDecoderService } from './jwt-decoder.service';
 import { AuthResponse } from '../models/auth-response';
+import { AuthState, loginSuccess, logoutSuccess } from '@social-networking/auth';
+import { Store } from '@ngrx/store';
+import { Router } from '@angular/router';
+import { JwtDecoderService } from './jwt-decoder.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
@@ -93,22 +92,6 @@ export class AuthService extends BaseService {
 	 */
 	loginUserAuthLoginPost(params: LoginUserAuthLoginPost$Params, context?: HttpContext): Observable<AuthResponse | HttpValidationError> {
 		return this.loginUserAuthLoginPost$Response(params, context).pipe(
-			take(1),
-			// tap(res => {
-			// 	this.router.navigate(['/posts']).then();
-			// 	localStorage.setItem('user', JSON.stringify(res.body));
-			//
-			// 	const { access_token } = res.body as AuthResponse;
-			//
-			// 	const now = new Date().getTime() / 1000;
-			// 	const unixTimestamp: number = this.decoder.decodeToken(access_token)?.exp
-			// 	if (now > unixTimestamp) {
-			// 		this.logout();
-			// 		return;
-			// 	}
-			//
-			// 	// this.store.dispatch(loginSuccess({ payload: res.body as AuthResponse }));
-			// }),
 			map((r: StrictHttpResponse<AuthResponse | HttpValidationError>): AuthResponse | HttpValidationError => r.body)
 		);
 	}
@@ -136,5 +119,4 @@ export class AuthService extends BaseService {
 		this.router.navigate(['/login']).then();
 		localStorage.removeItem('user');
 	}
-	
 }

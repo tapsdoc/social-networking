@@ -1,16 +1,24 @@
 import { createAction, props } from '@ngrx/store';
-import { LoginEntity } from './auth.models';
-import { AuthResponse } from '@social-networking/services';
+import { AuthResponseEntity, LoginEntity, SignupEntity } from './auth.models';
 import { HttpErrorResponse } from '@angular/common/http';
 
-export const LoginStart = createAction(
-	'[Auth] Login Start',
+export const initLogin = createAction(
+	'[Auth] Init Login',
 	props<{ payload: LoginEntity }>()
-)
+);
+
+export const initSignup = createAction(
+	'[Auth] Init Signup',
+	props<{ payload: SignupEntity }>()
+);
+
+export const initAutoLogin = createAction('[Auth] Init Auto Login');
+
+export const signupSuccess = createAction('[Auth] Signup Success');
 
 export const loginSuccess = createAction(
 	'[Auth] Login Success',
-	props<{ payload: AuthResponse }>()
+	props<{ payload: AuthResponseEntity }>()
 );
 
 export const logoutSuccess = createAction('[Auth] Logout');

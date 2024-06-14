@@ -1,9 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PostsService } from '@social-networking/services';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { PostsEntity, PostsState } from '@social-networking/posts';
+import { PostsEntity } from '../../store/posts.models';
 
 @Component({
 	selector: 'lib-post-card',
@@ -15,28 +13,23 @@ import { PostsEntity, PostsState } from '@social-networking/posts';
 export class PostCardComponent {
 	
 	@Input() post!: PostsEntity;
-	@Output() upvote = new EventEmitter<PostsEntity>();
-	@Output() downvote = new EventEmitter<PostsEntity>();
-	@Output() delete = new EventEmitter<PostsEntity>();
+	@Output() vote = new EventEmitter<number>();
+	@Output() delete = new EventEmitter<number>();
 	isOpen = false;
+	isLiked = false;
 	
 	constructor(
-		private postsService: PostsService,
 		private router: Router,
 		private route: ActivatedRoute,
-		private store: Store<PostsState>,
 	) { }
 	
 	toggleDropdown() {
 		this.isOpen = !this.isOpen;
 	}
 	
-	onUpvote() {
-		this.upvote.emit(this.post);
-	}
-	
-	onDownvote() {
-		this.downvote.emit(this.post);
+	onUpvoteOrDownvote() {
+		this.isLiked = !this.isLiked
+		this.vote.emit(this.post.id);
 	}
 	
 	onSelect() {
@@ -54,7 +47,7 @@ export class PostCardComponent {
 	}
 	
 	onDelete() {
-		this.delete.emit(this.post);
+		this.delete.emit(this.post.id);
 		this.toggleDropdown();
 	}
 }
