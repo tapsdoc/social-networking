@@ -1,13 +1,12 @@
 import { createReducer, on, Action } from '@ngrx/store';
-
-import * as AuthActions from './auth.actions';
-import { AuthResponse } from '@social-networking/services';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthResponseEntity } from './auth.models';
+import * as AuthActions from './auth.actions';
 
 export const AUTH_FEATURE_KEY = 'auth';
 
 export interface AuthState {
-	user: AuthResponse | null;
+	user: AuthResponseEntity | null;
 	isLoading: boolean;
 	error: HttpErrorResponse | null;
 }
@@ -24,7 +23,7 @@ export const initialAuthState: AuthState = {
 
 const reducer = createReducer(
 	initialAuthState,
-	on(AuthActions.LoginStart, state => ({
+	on(AuthActions.initLogin, state => ({
 		...state,
 		error: null,
 		isLoading: true
@@ -40,6 +39,16 @@ const reducer = createReducer(
 		}
 		return state;
 	}),
+	on(AuthActions.initSignup, state => ({
+		...state,
+		error: null,
+		isLoading: true
+	})),
+	on(AuthActions.signupSuccess, (state) => ({
+		...state,
+		user: null,
+		isLoading: false
+	})),
 	on(AuthActions.logoutSuccess, (state) => ({
 		...state,
 		user: null,

@@ -14,8 +14,7 @@
       <lib-post-card
         *ngFor="let post of (posts$ | async)"
         [post]="post"
-        (upvote)="onUpvote($event)"
-        (downvote)="onDownvote($event)"
+        (vote)="onUpvote($event)"
         (delete)="onDelete($event)"
       ></lib-post-card>
     </div>

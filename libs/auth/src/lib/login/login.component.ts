@@ -2,10 +2,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { LoadingComponent, SnackBarComponent } from '@social-networking/shared-ui';
 import { Store } from '@ngrx/store';
 import { AuthState } from '../store/auth.reducer';
-import { LoginStart } from '../store/auth.actions';
+import { initLogin } from '../store/auth.actions';
 import { map, Subscription } from 'rxjs';
 import { selectAuthState } from '../store/auth.selectors';
 
@@ -65,11 +66,11 @@ export class LoginComponent implements OnInit, OnDestroy {
 	}
 	
 	onSubmit() {
-		this.store.dispatch(LoginStart({ payload: this.form.value }));
+		this.store.dispatch(initLogin({ payload: this.form.value }));
 		// this.form.reset();
 	}
 	
 	ngOnDestroy() {
-		if (this.subs) this.subs.unsubscribe();
+		this.subs.unsubscribe();
 	}
 }

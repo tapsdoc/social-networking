@@ -11,11 +11,6 @@ export const selectLoginSuccess = createSelector(
 	(state) => state.user
 );
 
-export const selectLogoutSuccess = createSelector(
-	selectAuthState,
-	(state) => null
-);
-
 export const selectIsLoading = createSelector(
 	selectAuthState,
 	(state) => state.isLoading

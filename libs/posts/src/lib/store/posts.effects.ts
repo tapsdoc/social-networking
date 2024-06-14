@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { createEffect, Actions, ofType } from '@ngrx/effects';
-import { catchError, of, map, exhaustMap, switchMap, take, tap } from 'rxjs';
+import { catchError, of, map, exhaustMap, take, tap, mergeMap, switchMap } from 'rxjs';
 import * as PostsActions from './posts.actions';
 import { PostsService } from '@social-networking/services';
 import { Router } from '@angular/router';
@@ -51,7 +51,7 @@ export class PostsEffects {
 	addPost$ = createEffect(() =>
 		this.actions$.pipe(
 			ofType(PostsActions.initAddPost),
-			switchMap(({ payload }) =>
+			exhaustMap(({ payload }) =>
 				this.postsService.createPostPostsPost({
 					body: payload
 				}).pipe(
@@ -74,7 +74,7 @@ export class PostsEffects {
 	updatePost$ = createEffect(() =>
 		this.actions$.pipe(
 			ofType(PostsActions.initEditPost),
-			switchMap(({ id, payload }) =>
+			exhaustMap(({ id, payload }) =>
 				this.postsService.updatePostPostsPostIdPut({
 					post_id: id,
 					body: payload
@@ -93,4 +93,30 @@ export class PostsEffects {
 			)
 		)
 	);
+	
+	deletePost$ = createEffect(() =>
+		this.actions$.pipe(
+			ofType(PostsActions.initDeletePost),
+			mergeMap(({ id }) =>
+				this.postsService.deletePostPostsPostIdDelete({
+					post_id: id
+				}).pipe(
+					map(() =>
+						PostsActions.deletePostSuccess()
+					),
+					catchError((error) => {
+						console.error(error);
+						return of(PostsActions.loadPostsFailure({ error }));
+					})
+				)
+			)
+		)
+	);
+	
+	upvote$ = createEffect(() =>
+		this.actions$.pipe(
+			ofType(PostsActions.initUpvote),
+			
+		)
+	)
 }
