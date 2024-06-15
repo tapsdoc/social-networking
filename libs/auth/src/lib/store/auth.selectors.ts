@@ -6,7 +6,7 @@ export const selectAuthState =
   createFeatureSelector<AuthState>(AUTH_FEATURE_KEY);
 
 
-export const selectLoginSuccess = createSelector(
+export const selectUser = createSelector(
 	selectAuthState,
 	(state) => state.user
 );

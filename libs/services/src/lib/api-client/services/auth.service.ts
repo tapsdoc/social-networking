@@ -12,10 +12,8 @@ import { User } from '../models/user';
 import { loginUserAuthLoginPost, LoginUserAuthLoginPost$Params } from '../fn/auth/login-user-auth-login-post';
 import { HttpValidationError } from '../models/http-validation-error';
 import { AuthResponse } from '../models/auth-response';
-import { AuthState, loginSuccess, logoutSuccess } from '@social-networking/auth';
+import { AuthState, logoutSuccess } from '@social-networking/auth';
 import { Store } from '@ngrx/store';
-import { Router } from '@angular/router';
-import { JwtDecoderService } from './jwt-decoder.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
@@ -24,8 +22,6 @@ export class AuthService extends BaseService {
 		config: ApiConfiguration,
 		http: HttpClient,
 		private store: Store<AuthState>,
-		private router: Router,
-		private decoder: JwtDecoderService
 	) {
 		super(config, http);
 	}
@@ -96,27 +92,7 @@ export class AuthService extends BaseService {
 		);
 	}
 	
-	autoLogin() {
-		const user: AuthResponse = JSON.parse(localStorage.getItem("user") as string);
-		if (!user) {
-			return;
-		}
-		if (user.access_token) {
-			this.store.dispatch(loginSuccess({ payload: user }))
-			this.router.navigate(['/posts']).then();
-			const now = new Date().getTime() / 1000;
-			const unixTimestamp: number = this.decoder.decodeToken(user.access_token)?.exp
-			
-			if (now > unixTimestamp) {
-				this.logout();
-				return;
-			}
-		}
-	}
-	
 	logout() {
 		this.store.dispatch(logoutSuccess());
-		this.router.navigate(['/login']).then();
-		localStorage.removeItem('user');
 	}
 }

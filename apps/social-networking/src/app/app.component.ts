@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { initFlowbite } from 'flowbite';
 import { NavbarComponent } from '@social-networking/shared-ui';
-import { AuthService } from '@social-networking/services';
+import { Store } from '@ngrx/store';
+import { AuthState, initAutoLogin } from '@social-networking/auth';
 
 @Component({
 	standalone: true,
@@ -14,10 +15,11 @@ import { AuthService } from '@social-networking/services';
 export class AppComponent implements OnInit {
 	title = 'social-networking';
 	
-	constructor(private authService: AuthService) { }
+	private store = inject(Store<AuthState>);
 	
 	ngOnInit(): void {
 		initFlowbite();
-		this.authService.autoLogin();
+		// this.authService.autoLogin();
+		this.store.dispatch(initAutoLogin());
 	}
 }

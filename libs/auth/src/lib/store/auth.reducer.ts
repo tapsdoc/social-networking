@@ -23,42 +23,34 @@ export const initialAuthState: AuthState = {
 
 const reducer = createReducer(
 	initialAuthState,
-	on(AuthActions.initLogin, state => ({
+	on(AuthActions.initLogin, AuthActions.initAutoLogin, AuthActions.initSignup, state => ({
 		...state,
-		error: null,
 		isLoading: true
 	})),
-	on(AuthActions.loginSuccess, (state, { payload }) => {
+	on(AuthActions.loginSuccess, AuthActions.autoLoginSuccess, (state, { payload }) => {
 		if (!state.user) {
 			return {
 				...state,
 				user: payload,
-				error: null,
 				isLoading: false
 			};
 		}
 		return state;
 	}),
-	on(AuthActions.initSignup, state => ({
+	on(AuthActions.signupSuccess, AuthActions.logoutSuccess, state => ({
 		...state,
-		error: null,
-		isLoading: true
-	})),
-	on(AuthActions.signupSuccess, (state) => ({
-		...state,
-		user: null,
-		isLoading: false
-	})),
-	on(AuthActions.logoutSuccess, (state) => ({
-		...state,
-		user: null,
-		isLoading: false
+		isLoading: false,
+		user: null
 	})),
    on(AuthActions.loadAuthFailure, (state, { error }) => ({
       ...state,
       error,
       isLoading: false
    })),
+	on(AuthActions.clearAuthError, (state) => ({
+		...state,
+		error: null
+	}))
 );
 
 export function authReducer(state: AuthState | undefined, action: Action){

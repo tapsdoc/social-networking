@@ -44,7 +44,11 @@ const reducer = createReducer(
 			isLoading: false,
 			loaded: true,
 	})),
-	on(PostsActions.initGetPost, (state, { id }) => ({
+	on(
+		PostsActions.initGetPost,
+		PostsActions.initEditPost,
+		PostsActions.initDeletePost,
+		(state, { id }) => ({
 		...state,
 		selectedId: id,
 		isLoading: true,
@@ -61,7 +65,6 @@ const reducer = createReducer(
 		...state,
 		selectedId: undefined,
 		isLoading: true,
-		loaded: false,
 		error: null,
 	})),
 	on(PostsActions.addPostSuccess, (state, { post }) => ({
@@ -70,25 +73,11 @@ const reducer = createReducer(
 		isLoading: false,
 		loaded: true
 	})),
-	on(PostsActions.initEditPost, (state, { id }) => ({
-		...state,
-		selectedId: id,
-		isLoading: true,
-		loaded: false,
-		error: null,
-	})),
 	on(PostsActions.editPostSuccess, (state, { post }) => ({
 		...state,
 		post: post,
 		isLoading: false,
 		loaded: true
-	})),
-	on(PostsActions.initDeletePost, (state, { id }) => ({
-		...state,
-		selectedId: id,
-		isLoading: true,
-		loaded: false,
-		error: null,
 	})),
 	on(PostsActions.deletePostSuccess, (state ) => (
 		postsAdapter.removeOne(state.selectedId as number, {
@@ -97,6 +86,45 @@ const reducer = createReducer(
 			selectedId: undefined,
 		})
 	)),
+	on(PostsActions.initDownvote, PostsActions.initUpvote, (state, { id }) => ({
+		...state,
+		selectedId: id,
+		isLoading: true,
+	})),
+	on(PostsActions.upvoteSuccess, (state ) => {
+		
+		const postToUpdate = state.entities[state.selectedId as number];
+		if (postToUpdate) {
+			const updatedPost = { ...postToUpdate, votes: postToUpdate.votes as number + 1 };
+			return postsAdapter.updateOne({
+				id: state.selectedId as number,
+				changes: updatedPost
+			}, {
+				...state,
+				isLoading: false,
+				selectedId: undefined
+			})
+		} else {
+			return state
+		}
+	}),
+	on(PostsActions.downvoteSuccess, (state ) => {
+		
+		const postToUpdate = state.entities[state.selectedId as number];
+		if (postToUpdate) {
+			const updatedPost = { ...postToUpdate, votes: postToUpdate.votes as number - 1 };
+			return postsAdapter.updateOne({
+				id: state.selectedId as number,
+				changes: updatedPost
+			}, {
+				...state,
+				isLoading: false,
+				selectedId: undefined
+			})
+		} else {
+			return state
+		}
+	}),
 	on(PostsActions.loadPostsFailure, (state, { error }) => ({
 		...state,
 		isLoading: false,
@@ -104,6 +132,10 @@ const reducer = createReducer(
 		selectedId: undefined,
 		post: null,
 		error
+	})),
+	on(PostsActions.clearError, (state) => ({
+		...state,
+		error: null
 	}))
 );
 
