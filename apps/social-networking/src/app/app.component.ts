@@ -19,7 +19,6 @@ export class AppComponent implements OnInit {
 	
 	ngOnInit(): void {
 		initFlowbite();
-		// this.authService.autoLogin();
 		this.store.dispatch(initAutoLogin());
 	}
 }

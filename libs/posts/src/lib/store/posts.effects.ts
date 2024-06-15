@@ -70,7 +70,6 @@ export class PostsEffects {
 		)
 	);
 	
-	
 	updatePost$ = createEffect(() =>
 		this.actions$.pipe(
 			ofType(PostsActions.initEditPost),
