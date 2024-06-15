@@ -16,7 +16,7 @@ export class PostCardComponent {
 	@Output() vote = new EventEmitter<number>();
 	@Output() delete = new EventEmitter<number>();
 	isOpen = false;
-	isLiked = false;
+	isVoted = false;
 	
 	constructor(
 		private router: Router,
@@ -28,8 +28,9 @@ export class PostCardComponent {
 	}
 	
 	onUpvoteOrDownvote() {
-		this.isLiked = !this.isLiked
+		this.isVoted = !this.isVoted
 		this.vote.emit(this.post.id);
+		console.log(this.isVoted);
 	}
 	
 	onSelect() {

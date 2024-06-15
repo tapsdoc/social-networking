@@ -8,7 +8,6 @@ export const authRoutes: Route[] = [
 	{
 		path: '',
 		children: [
-			{ path: '', redirectTo: '/login', pathMatch: 'full' },
 			{
 				path: 'login',
 				loadComponent: () =>

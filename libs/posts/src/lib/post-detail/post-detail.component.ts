@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Params, RouterLink } from '@angular/router';
+import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { PostsState } from '../store/posts.reducer';
 import { Subscription } from 'rxjs';
@@ -23,14 +23,15 @@ export class PostDetailComponent implements OnInit, OnDestroy {
 	constructor(
 		private route: ActivatedRoute,
 		private store: Store<PostsState>,
+		private router: Router
 	) { }
 	
 	ngOnInit() {
+		console.log(this.router.url);
 		this.route.params.subscribe(
 			(params: Params) => {
 				this.id = +params['id'];
 				this.store.dispatch(initGetPost({ id: this.id }));
-				
 				this.subs = this.store.select(selectPost)
 				.subscribe(post => {
 					if (post) this.post = post;

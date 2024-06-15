@@ -5,43 +5,43 @@ import { HttpErrorResponse } from '@angular/common/http';
 export const initPosts = createAction('[Posts Page] Init');
 
 export const initGetPost = createAction(
-	'[Get Post] Init',
+	'[Posts] Get Post Init',
 	props<{ id: number }>()
-)
+);
 
 export const initAddPost = createAction(
-	'[Add Post] Init',
+	'[Posts] Add Post Init',
 	props<{ payload: PostCreateEntity }>()
 );
 
 export const initEditPost = createAction(
-	'[Edit Post] Init',
+	'[Posts] Edit Post Init',
 	props<{ id: number, payload: PostUpdateEntity }>()
 );
 
 export const initDeletePost = createAction(
-	'[Delete Post] Init',
+	'[Posts] Delete Post Init',
 	props<{ id: number }>()
 );
 
 export const initUpvote = createAction(
-	'[Upvote] Init',
+	'[Posts] Upvote Init',
 	props<{ id: number }>()
 );
 
 export const initDownvote = createAction(
-	'[Downvote] Init',
+	'[Posts] Downvote Init',
 	props<{ id: number }>()
 );
 
 export const upvoteSuccess = createAction(
 	'[Posts] Upvote Success',
-	props<{ message: string }>()
+	props<{ post: PostsEntity }>()
 );
 
 export const downvoteSuccess = createAction(
 	'[Posts] Downvote Success',
-	props<{ message: string }>()
+	props<{ post: PostsEntity }>()
 );
 export const deletePostSuccess = createAction('[Posts] Delete Success');
 
@@ -68,4 +68,8 @@ export const loadPostSuccess = createAction(
 export const loadPostsFailure = createAction(
   '[Posts] Load Posts Failure',
   props<{ error: HttpErrorResponse }>()
+);
+
+export const clearError = createAction(
+	'[Posts] Clear Error',
 );

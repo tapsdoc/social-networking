@@ -70,7 +70,6 @@ export class PostsEffects {
 		)
 	);
 	
-	
 	updatePost$ = createEffect(() =>
 		this.actions$.pipe(
 			ofType(PostsActions.initEditPost),
@@ -116,7 +115,38 @@ export class PostsEffects {
 	upvote$ = createEffect(() =>
 		this.actions$.pipe(
 			ofType(PostsActions.initUpvote),
-			
+			exhaustMap(({ id }) =>
+				this.postsService.upvotePostPostsPostIdUpvotePut({
+					post_id: id
+				}).pipe(
+					map((post) =>
+						PostsActions.upvoteSuccess({ post: post })
+					),
+					catchError((error) => {
+						console.error(error);
+						return of(PostsActions.loadPostsFailure({ error }));
+					})
+				)
+			)
 		)
-	)
+	);
+	
+	downvote$ = createEffect(() =>
+		this.actions$.pipe(
+			ofType(PostsActions.initDownvote),
+			exhaustMap(({ id }) =>
+				this.postsService.downvotePostPostsPostIdDownvotePut({
+					post_id: id
+				}).pipe(
+					map((post) =>
+						PostsActions.downvoteSuccess({ post: post })
+					),
+					catchError((error) => {
+						console.error(error);
+						return of(PostsActions.loadPostsFailure({ error }));
+					})
+				)
+			)
+		)
+	);
 }

@@ -14,6 +14,11 @@ export const initSignup = createAction(
 
 export const initAutoLogin = createAction('[Auth] Init Auto Login');
 
+export const autoLoginSuccess = createAction(
+	'[Auth] Auto Login Success',
+	props<{ payload: AuthResponseEntity }>()
+);
+
 export const signupSuccess = createAction('[Auth] Signup Success');
 
 export const loginSuccess = createAction(
@@ -27,3 +32,7 @@ export const loadAuthFailure = createAction(
   '[Auth] Load Auth Failure',
   props<{ error: HttpErrorResponse }>()
 );
+
+export const clearAuthError = createAction(
+	'[Auth] Clear Error',
+)

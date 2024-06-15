@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
 import { LoadingComponent, SnackBarComponent } from '@social-networking/shared-ui';
 import { Store } from '@ngrx/store';
 import { AuthState } from '../store/auth.reducer';
-import { initLogin } from '../store/auth.actions';
+import { clearAuthError, initLogin } from '../store/auth.actions';
 import { map, Subscription } from 'rxjs';
 import { selectAuthState } from '../store/auth.selectors';
 
@@ -31,9 +31,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 	type!: string | null;
 	private subs!: Subscription;
 	
-	constructor(
-		private store: Store<AuthState>
-	) { }
+	constructor(private store: Store<AuthState>) { }
 	
 	ngOnInit() {
 		this.subs = this.store.select(selectAuthState)
@@ -43,16 +41,16 @@ export class LoginComponent implements OnInit, OnDestroy {
 				return { isLoading, error };
 			})
 		).subscribe({
-			next: (state) => {
-				this.isLoading = state.isLoading;
-				if (state.error) {
+			next: ({ isLoading, error }) => {
+				this.isLoading = isLoading;
+				if (error) {
 					this.type = 'error';
-					if(state.error.statusText === 'Unknown Error') {
+					if(error.statusText === 'Unknown Error') {
 						this.error = 'An error occurred!'
-					} else this.error = state.error.error?.detail;
-					console.log(state.error);
+					} else this.error = error.error?.detail;
+					this.store.dispatch(clearAuthError());
 				}
-			}
+			},
 		});
 		
 		this.form = new FormGroup({
@@ -67,7 +65,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 	
 	onSubmit() {
 		this.store.dispatch(initLogin({ payload: this.form.value }));
-		// this.form.reset();
+		this.form.reset();
 	}
 	
 	ngOnDestroy() {

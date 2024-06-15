@@ -7,7 +7,7 @@ import { LoadingComponent, SnackBarComponent } from '@social-networking/shared-u
 import { Store } from '@ngrx/store';
 import { PostsState } from '../store/posts.reducer';
 import { selectPost, selectPostsState } from '../store/posts.selectors';
-import { initAddPost, initEditPost, initGetPost } from '../store/posts.actions';
+import { initAddPost, initEditPost, initGetPost, clearError } from '../store/posts.actions';
 import { PostsEntity } from '../store/posts.models';
 
 @Component({
@@ -52,6 +52,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 					.subscribe(post => {
 						if (post) this.post = post;
 					});
+					this.store.dispatch(clearError())
 				}
 				
 				this.getPostState();

@@ -14,7 +14,7 @@ import { selectAuthState } from '../store/auth.selectors';
 import { map, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { AuthState } from '../store/auth.reducer';
-import { initSignup } from '../store/auth.actions';
+import { clearAuthError, initSignup } from '../store/auth.actions';
 
 @Component({
 	selector: 'lib-sign-up',
@@ -55,7 +55,13 @@ export class SignUpComponent implements OnInit, OnDestroy {
 						this.error = 'An error occurred!'
 					} else this.error = state.error.error?.detail;
 					console.log(state.error);
+					// this.store.dispatch(clearAuthError());
+					
 				}
+			},
+			complete: () => {
+				this.type = null;
+				this.error = null;
 			}
 		});
 		this.initForm();
@@ -63,6 +69,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
 	
 	onSubmit() {
 		this.store.dispatch(initSignup({ payload: this.form.value }));
+		this.form.reset();
 	}
 	
 	private passwordMatchValidator(form: FormGroup) {
