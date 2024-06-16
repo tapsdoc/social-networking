@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { createEffect, Actions, ofType } from '@ngrx/effects';
-import { catchError, of, map, exhaustMap, take, tap, mergeMap, switchMap } from 'rxjs';
+import { catchError, of, map, exhaustMap, take, tap, mergeMap, switchMap, concatMap } from 'rxjs';
 import * as PostsActions from './posts.actions';
 import { PostsService } from '@social-networking/services';
 import { Router } from '@angular/router';
@@ -15,7 +15,7 @@ export class PostsEffects {
 	loadPosts$ = createEffect(() =>
 		this.actions$.pipe(
 			ofType(PostsActions.initPosts),
-			exhaustMap(() => this.postsService.getAllPostsPostsGet()
+			switchMap(() => this.postsService.getAllPostsPostsGet()
 			.pipe(
 				take(1),
 				map(posts =>
@@ -115,7 +115,7 @@ export class PostsEffects {
 	upvote$ = createEffect(() =>
 		this.actions$.pipe(
 			ofType(PostsActions.initUpvote),
-			exhaustMap(({ id }) =>
+			concatMap(({ id }) =>
 				this.postsService.upvotePostPostsPostIdUpvotePut({
 					post_id: id
 				}).pipe(
@@ -134,7 +134,7 @@ export class PostsEffects {
 	downvote$ = createEffect(() =>
 		this.actions$.pipe(
 			ofType(PostsActions.initDownvote),
-			exhaustMap(({ id }) =>
+			concatMap(({ id }) =>
 				this.postsService.downvotePostPostsPostIdDownvotePut({
 					post_id: id
 				}).pipe(

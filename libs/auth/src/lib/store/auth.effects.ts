@@ -1,11 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { createEffect, Actions, ofType } from '@ngrx/effects';
-import { catchError, of, tap, map, exhaustMap, mergeMap } from 'rxjs';
+import { catchError, of, tap, map, exhaustMap, mergeMap, EMPTY } from 'rxjs';
 import * as AuthActions from './auth.actions';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AuthService, JwtDecoderService } from '@social-networking/services';
 import { Router } from '@angular/router';
 import { AuthResponseEntity } from './auth.models';
+import { autoLoginSuccess, initAutoLogin, logoutSuccess } from './auth.actions';
 
 @Injectable()
 export class AuthEffects {
@@ -23,6 +24,7 @@ export class AuthEffects {
                map(user =>
                   AuthActions.loginSuccess({ payload: user as AuthResponseEntity })),
                catchError(error => {
+                  console.error(error)
                   return of(AuthActions.loadAuthFailure({ error }))
                })
             )
@@ -39,6 +41,7 @@ export class AuthEffects {
                map(() =>
                   AuthActions.signupSuccess()),
                catchError(error => {
+                  console.error(error);
                   return of(AuthActions.loadAuthFailure({ error }))
                })
             )
@@ -68,40 +71,50 @@ export class AuthEffects {
                   this.decoder.decodeToken(payload.access_token)?.exp
                
                if (now > unixTimestamp) {
-                  this.authService.logout();
+                  return of(logoutSuccess());
                }
+               return EMPTY;
             }),
          ),
+   );
+   
+   autoLogin$ = createEffect(
+      () => {
+         return this.actions$.pipe(
+            ofType(initAutoLogin),
+            map(() => {
+              this.authService.autoLogin();
+            })
+         );
+      },
       { dispatch: false }
    );
    
-   autoLogin$ = createEffect(() =>
-      this.actions$.pipe(
-         ofType(AuthActions.initAutoLogin),
-         mergeMap(() => {
-            const user: AuthResponseEntity | null = JSON.parse(localStorage.getItem('user') as string);
-            if (!user) {
-               return of(AuthActions.logoutSuccess());
-            }
-            if (user.access_token) {
-               const now = new Date().getTime() / 1000;
-               const unixTimestamp: number = this.decoder.decodeToken(user.access_token)?.exp;
-               
-               if (now > unixTimestamp) {
-                  this.authService.logout();
-                  return of(AuthActions.logoutSuccess());
-               }
-               console.log('Third');
-               return of(AuthActions.autoLoginSuccess({ payload: user }));
-            }
-            return of(AuthActions.logoutSuccess());
-         }),
-         tap(() => {
-            this.router.navigate(['/']).then();
-         }),
-         catchError((error) => of(AuthActions.loadAuthFailure({ error })))
-      )
-   );
+   // autoLogin$ = createEffect(() =>
+   //    this.actions$.pipe(
+   //       ofType(AuthActions.autoLoginSuccess),
+   //       map(() => {
+   //
+   //          const user: AuthResponseEntity | null =
+   //             JSON.parse(localStorage.getItem('user') as string);
+   //
+   //          if (user) {
+   //             const now = new Date().getTime() / 1000;
+   //             const unixTimestamp: number =
+   //                this.decoder.decodeToken(user.access_token)?.exp;
+   //
+   //             if (now > unixTimestamp) {
+   //                console.log(user);
+   //                return (AuthActions.logoutSuccess());
+   //             }
+   //             console.log(user);
+   //             return (AuthActions.autoLoginSuccess({ payload: user }));
+   //          }
+   //          console.log(user);
+   //          return (AuthActions.logoutSuccess());
+   //       }),
+   //    )
+   // );
    
    logoutSuccess$ = createEffect(
       () =>
@@ -109,7 +122,7 @@ export class AuthEffects {
             ofType(AuthActions.logoutSuccess),
             tap(() => {
                localStorage.removeItem('user');
-               this.router.navigate(['/login']).then()
+              // this.router.navigate(['/login']).then()
             }),
          ),
       { dispatch: false }

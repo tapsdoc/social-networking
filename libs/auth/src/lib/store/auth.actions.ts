@@ -29,7 +29,7 @@ export const loginSuccess = createAction(
 export const logoutSuccess = createAction('[Auth] Logout');
 
 export const loadAuthFailure = createAction(
-  '[Auth] Load Auth Failure',
+  '[Auth] Error',
   props<{ error: HttpErrorResponse }>()
 );
 

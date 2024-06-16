@@ -18,41 +18,39 @@ export interface AuthPartialState {
 export const initialAuthState: AuthState = {
 	user: null,
 	error: null,
-	isLoading: false,
+	isLoading: false
 };
 
 const reducer = createReducer(
 	initialAuthState,
-	on(AuthActions.initLogin, AuthActions.initAutoLogin, AuthActions.initSignup, state => ({
+	on(AuthActions.initLogin, AuthActions.initSignup, state => ({
 		...state,
 		isLoading: true
 	})),
 	on(AuthActions.loginSuccess, AuthActions.autoLoginSuccess, (state, { payload }) => {
-		if (!state.user) {
-			return {
-				...state,
-				user: payload,
-				isLoading: false
-			};
-		}
-		return state;
+		console.log(payload);
+		return {
+			...state,
+			user: payload,
+			isLoading: false
+		};
 	}),
 	on(AuthActions.signupSuccess, AuthActions.logoutSuccess, state => ({
 		...state,
 		isLoading: false,
 		user: null
 	})),
-   on(AuthActions.loadAuthFailure, (state, { error }) => ({
-      ...state,
-      error,
-      isLoading: false
-   })),
+	on(AuthActions.loadAuthFailure, (state, { error }) => ({
+		...state,
+		error,
+		isLoading: false
+	})),
 	on(AuthActions.clearAuthError, (state) => ({
 		...state,
 		error: null
 	}))
 );
 
-export function authReducer(state: AuthState | undefined, action: Action){
+export function authReducer(state: AuthState | undefined, action: Action) {
 	return reducer(state, action);
 }

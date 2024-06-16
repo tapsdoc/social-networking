@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { map, take } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { AuthState } from './store/auth.reducer';
-import { selectAuthState } from './store/auth.selectors';
+import { selectUser } from './store/auth.selectors';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const authGuard: CanActivateFn = (route, state) => {
@@ -11,17 +11,16 @@ export const authGuard: CanActivateFn = (route, state) => {
    const router = inject(Router);
    const store = inject(Store<AuthState>)
 
-   return store.select(selectAuthState)
+   return store.select(selectUser)
       .pipe(
          take(1),
-         map(state => {
-            return state.user;
-         }),
          map((user) => {
+            console.log(user);
             if (user) {
                return true;
             }
-            return router.createUrlTree(['/login']);
+            return false;
+            // return router.createUrlTree(['/login']);
          })
       );
 };

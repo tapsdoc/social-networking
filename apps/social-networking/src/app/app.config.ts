@@ -16,6 +16,7 @@ import * as fromAuth from '@social-networking/auth';
 import * as fromPosts from '@social-networking/posts';
 import * as fromUsers from '@social-networking/users';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { provideRouterStore } from '@ngrx/router-store';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -25,6 +26,7 @@ export const appConfig: ApplicationConfig = {
 			[fromPosts.POSTS_FEATURE_KEY]: fromPosts.postsReducer,
 			[fromUsers.USERS_FEATURE_KEY]: fromUsers.usersReducer,
 		}),
+		provideRouterStore(),
 		provideStoreDevtools({
 			maxAge: 25, // Retains last 25 states
 			logOnly: !isDevMode(), // Restrict extension to log-only mode

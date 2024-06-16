@@ -66,7 +66,7 @@ export const loadPostSuccess = createAction(
 )
 
 export const loadPostsFailure = createAction(
-  '[Posts] Load Posts Failure',
+  '[Posts] Error',
   props<{ error: HttpErrorResponse }>()
 );
 

@@ -12,8 +12,10 @@ import { User } from '../models/user';
 import { loginUserAuthLoginPost, LoginUserAuthLoginPost$Params } from '../fn/auth/login-user-auth-login-post';
 import { HttpValidationError } from '../models/http-validation-error';
 import { AuthResponse } from '../models/auth-response';
-import { AuthState, logoutSuccess } from '@social-networking/auth';
+import { AuthState, autoLoginSuccess, logoutSuccess } from '@social-networking/auth';
 import { Store } from '@ngrx/store';
+import * as AuthActions from '../../../../../auth/src/lib/store/auth.actions';
+import { JwtDecoderService } from './jwt-decoder.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
@@ -22,6 +24,7 @@ export class AuthService extends BaseService {
 		config: ApiConfiguration,
 		http: HttpClient,
 		private store: Store<AuthState>,
+		private decoder: JwtDecoderService
 	) {
 		super(config, http);
 	}
@@ -92,7 +95,22 @@ export class AuthService extends BaseService {
 		);
 	}
 	
-	logout() {
-		this.store.dispatch(logoutSuccess());
+	autoLogin() {
+		const user: AuthResponse = JSON.parse(localStorage.getItem("user")!);
+		
+		if (user) {
+			const now = new Date().getTime() / 1000;
+			const unixTimestamp: number =
+				this.decoder.decodeToken(user.access_token)?.exp;
+			
+			if (now > unixTimestamp) {
+				console.log(user);
+				this.store.dispatch(logoutSuccess());
+			}
+			console.log(user);
+			// this.store.dispatch(autoLoginSuccess({ payload: user }))
+		}
+		console.log(user);
+		// this.store.dispatch(logoutSuccess());
 	}
 }

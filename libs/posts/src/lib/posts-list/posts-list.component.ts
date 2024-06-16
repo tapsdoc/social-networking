@@ -36,15 +36,14 @@ export class PostsListComponent implements OnInit {
 		this.posts$ = this.store.select(selectAllPosts);
 	}
 	
-	onUpvote(id: number) {
-		if (!this.isVoted) {
-			this.store.dispatch(initUpvote({ id: id }));
+	onUpvote(data: { id: number; isVoted: boolean }) {
+		if (data.isVoted) {
+			this.store.dispatch(initUpvote({ id: data.id }));
 			this.isVoted = !this.isVoted;
 		} else {
-			this.store.dispatch(initDownvote({ id: id }));
+			this.store.dispatch(initDownvote({ id: data.id }));
 			this.isVoted = !this.isVoted;
 		}
-		
 	}
 	
 	onDelete(id: number) {
