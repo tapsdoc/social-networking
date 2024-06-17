@@ -1,11 +1,9 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { map, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { AuthState, logoutSuccess, selectAuthState } from '@social-networking/auth';
-// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AuthState, logoutSuccess, selectUser } from '@social-networking/auth';
 import { JwtDecoderService } from '@social-networking/services';
 
 @Component({
@@ -25,17 +23,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
 	private decoder = inject(JwtDecoderService);
 	
 	ngOnInit() {
-		this.subs = this.store.select(selectAuthState)
-		.pipe(
-			map(state => {
-				return state.user;
-			})
-		)
+		this.subs = this.store.select(selectUser)
 		.subscribe({
 			next: (user) => {
 				if (user) {
 					this.isLoggedIn = !!user;
-					if (user.access_token) this.username = this.decoder.decodeToken(user.access_token)?.sub;
+					if (user.access_token)
+						this.username = this.decoder.decodeToken(user.access_token)?.sub;
 				}
 			}
 		});

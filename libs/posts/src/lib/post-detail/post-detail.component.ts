@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Params, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { PostsState } from '../store/posts.reducer';
 import { Subscription } from 'rxjs';
 import { selectPost } from '../store/posts.selectors';
-import { initGetPost } from '../store/posts.actions';
 import { PostsEntity } from '../store/posts.models';
+import { initGetPost } from '../store/posts.actions';
 
 @Component({
 	selector: 'lib-post-detail',
@@ -22,12 +22,10 @@ export class PostDetailComponent implements OnInit, OnDestroy {
 	
 	constructor(
 		private route: ActivatedRoute,
-		private store: Store<PostsState>,
-		private router: Router
+		private store: Store<PostsState>
 	) { }
 	
 	ngOnInit() {
-		console.log(this.router.url);
 		this.route.params.subscribe(
 			(params: Params) => {
 				this.id = +params['id'];

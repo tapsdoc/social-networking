@@ -12,8 +12,6 @@ import { User } from '../models/user';
 import { loginUserAuthLoginPost, LoginUserAuthLoginPost$Params } from '../fn/auth/login-user-auth-login-post';
 import { HttpValidationError } from '../models/http-validation-error';
 import { AuthResponse } from '../models/auth-response';
-import { AuthState, logoutSuccess } from '@social-networking/auth';
-import { Store } from '@ngrx/store';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
@@ -21,7 +19,6 @@ export class AuthService extends BaseService {
 	constructor(
 		config: ApiConfiguration,
 		http: HttpClient,
-		private store: Store<AuthState>,
 	) {
 		super(config, http);
 	}
@@ -90,9 +87,5 @@ export class AuthService extends BaseService {
 		return this.loginUserAuthLoginPost$Response(params, context).pipe(
 			map((r: StrictHttpResponse<AuthResponse | HttpValidationError>): AuthResponse | HttpValidationError => r.body)
 		);
-	}
-	
-	logout() {
-		this.store.dispatch(logoutSuccess());
 	}
 }

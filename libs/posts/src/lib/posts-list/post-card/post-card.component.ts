@@ -13,7 +13,10 @@ import { PostsEntity } from '../../store/posts.models';
 export class PostCardComponent {
 	
 	@Input() post!: PostsEntity;
-	@Output() vote = new EventEmitter<number>();
+	@Output() vote = new EventEmitter<{
+		id: number,
+		isVoted: boolean
+	}>();
 	@Output() delete = new EventEmitter<number>();
 	isOpen = false;
 	isVoted = false;
@@ -28,8 +31,11 @@ export class PostCardComponent {
 	}
 	
 	onUpvoteOrDownvote() {
-		this.isVoted = !this.isVoted
-		this.vote.emit(this.post.id);
+		this.isVoted = !this.isVoted;
+		this.vote.emit({
+			id: this.post.id,
+			isVoted: !this.isVoted
+		});
 		console.log(this.isVoted);
 	}
 	

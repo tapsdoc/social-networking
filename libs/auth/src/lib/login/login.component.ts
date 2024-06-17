@@ -2,13 +2,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { LoadingComponent, SnackBarComponent } from '@social-networking/shared-ui';
 import { Store } from '@ngrx/store';
 import { AuthState } from '../store/auth.reducer';
-import { clearAuthError, initLogin } from '../store/auth.actions';
-import { map, Subscription } from 'rxjs';
-import { selectAuthState } from '../store/auth.selectors';
+import { initLogin } from '../store/auth.actions';
+import { selectIsLoading, setIsLoading } from '@social-networking/shared-ui';
+import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'lib-login',
@@ -16,9 +14,7 @@ import { selectAuthState } from '../store/auth.selectors';
 	imports: [
 		CommonModule,
 		ReactiveFormsModule,
-		RouterLink,
-		SnackBarComponent,
-		LoadingComponent
+		RouterLink
 	],
 	templateUrl: './login.component.html',
 	styleUrl: './login.component.css'
@@ -27,32 +23,27 @@ export class LoginComponent implements OnInit, OnDestroy {
 	
 	form!: FormGroup;
 	isLoading = false;
-	error!: string | null;
-	type!: string | null;
 	private subs!: Subscription;
 	
 	constructor(private store: Store<AuthState>) { }
 	
 	ngOnInit() {
-		this.subs = this.store.select(selectAuthState)
-		.pipe(
-			map(state => {
-				const { isLoading, error } = state;
-				return { isLoading, error };
-			})
-		).subscribe({
-			next: ({ isLoading, error }) => {
+		this.subs = this.store.select(selectIsLoading).subscribe(
+			isLoading => {
 				this.isLoading = isLoading;
-				if (error) {
-					this.type = 'error';
-					if(error.statusText === 'Unknown Error') {
-						this.error = 'An error occurred!'
-					} else this.error = error.error?.detail;
-					this.store.dispatch(clearAuthError());
-				}
-			},
-		});
+			}
+		);
 		
+		this.initForm();
+	}
+	
+	onSubmit() {
+		this.store.dispatch(setIsLoading({ status: true }));
+		this.store.dispatch(initLogin({ payload: this.form.value }));
+		this.form.reset();
+	}
+	
+	private initForm() {
 		this.form = new FormGroup({
 			username: new FormControl('', Validators.required),
 			password: new FormControl('', Validators.required),
@@ -61,11 +52,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 			client_secret: new FormControl(''),
 			scope: new FormControl('')
 		});
-	}
-	
-	onSubmit() {
-		this.store.dispatch(initLogin({ payload: this.form.value }));
-		this.form.reset();
 	}
 	
 	ngOnDestroy() {

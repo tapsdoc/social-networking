@@ -1,5 +1,11 @@
 <div class="gap-y-3 w-full">
   <lib-navbar></lib-navbar>
+  <div *ngIf="(error$ | async)" class="flex mt-10 justify-center fixed top-0 left-3 w-full">
+    <lib-snackbar
+      [type]="'error'"
+      [message]="error$ | async"
+    ></lib-snackbar>
+  </div>
   <div class="bg-gray-50">
     <router-outlet></router-outlet>
   </div>

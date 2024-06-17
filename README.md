@@ -25,7 +25,7 @@ Run `npx nx build social-networking` to build the application. The build artifac
 To execute tasks with Nx use the following syntax:
 
 ```
-npx nx run-many -t build e2e lint test serve -p social-networking auth posts services shared-ui
+npx nx run-many -t build e2e lint test serve -p social-networking auth posts services sharedRoutes-ui
 ```
 
 ## Explore the project graph

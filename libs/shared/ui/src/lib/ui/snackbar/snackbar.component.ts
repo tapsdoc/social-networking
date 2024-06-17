@@ -13,7 +13,7 @@ import { Dismiss, DismissInterface, DismissOptions, InstanceOptions } from 'flow
 })
 export class SnackBarComponent implements OnInit {
 	
-	@Input() type!: string | null;
+	@Input() type!: 'error' | 'success' | 'warn' | null;
 	@Input() message!: string | null;
 	protected snackbarTypes: SnackbarType[] = [];
 	

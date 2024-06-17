@@ -2,13 +2,14 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, Subscription } from 'rxjs';
-import { LoadingComponent, SnackBarComponent } from '@social-networking/shared-ui';
+import { Subscription } from 'rxjs';
+import { LoadingComponent, selectIsLoading, SnackBarComponent } from '@social-networking/shared-ui';
 import { Store } from '@ngrx/store';
 import { PostsState } from '../store/posts.reducer';
-import { selectPost, selectPostsState } from '../store/posts.selectors';
-import { initAddPost, initEditPost, initGetPost, clearError } from '../store/posts.actions';
+import { selectPost } from '../store/posts.selectors';
+import { initAddPost, initEditPost, initGetPost } from '../store/posts.actions';
 import { PostsEntity } from '../store/posts.models';
+import * as fromShared from '@social-networking/shared-ui';
 
 @Component({
 	selector: 'lib-create-post',
@@ -25,8 +26,6 @@ import { PostsEntity } from '../store/posts.models';
 export class CreatePostComponent implements OnInit, OnDestroy {
 	
 	form!: FormGroup;
-	error!: string | null;
-	type!: string | null;
 	isLoading = false;
 	id!: number;
 	editMode = false;
@@ -52,7 +51,6 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 					.subscribe(post => {
 						if (post) this.post = post;
 					});
-					this.store.dispatch(clearError())
 				}
 				
 				this.getPostState();
@@ -62,27 +60,16 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 	}
 	
 	private getPostState() {
-		this.subs = this.store.select(selectPostsState)
-		.pipe(
-			map(state => {
-				const { isLoading, error } = state;
-				return { isLoading, error };
-			})
-		).subscribe({
+		this.subs = this.store.select(selectIsLoading)
+		.subscribe({
 			next: (state) => {
-				this.isLoading = state.isLoading;
-				if (state.error) {
-					this.type = 'error';
-					if (state.error.statusText === 'Unknown Error') {
-						this.error = 'An error occurred!';
-					} else this.error = state.error.error?.detail;
-					console.log(state.error);
-				}
+				this.isLoading = state;
 			}
 		});
 	}
 	
 	onSubmit() {
+		this.store.dispatch(fromShared.setIsLoading({ status: true }));
 		if (this.editMode) {
 			this.store.dispatch(initEditPost({
 				id: this.id,
@@ -114,6 +101,6 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 	}
 	
 	ngOnDestroy() {
-		if (this.subs) this.subs.unsubscribe();
+		this.subs.unsubscribe();
 	}
 }
