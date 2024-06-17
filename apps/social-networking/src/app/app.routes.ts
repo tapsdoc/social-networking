@@ -1,11 +1,15 @@
 import { Route } from '@angular/router';
-
 export const appRoutes: Route[] = [
 	{ path: '', redirectTo: '/posts', pathMatch: 'full' },
 	{
-		path: '',
-		loadChildren: () =>
-			import('@social-networking/auth').then(m => m.authRoutes)
+		path: 'login',
+		loadComponent: () =>
+			import('@social-networking/auth').then((m) => m.LoginComponent),
+	},
+	{
+		path: 'sign-up',
+		loadComponent: () =>
+			import('@social-networking/auth').then((m) => m.SignUpComponent)
 	},
 	{
 		path: 'posts',
@@ -19,7 +23,7 @@ export const appRoutes: Route[] = [
 	},
 	{
 		path: '**',
-		loadComponent: () =>
+		loadChildren: () =>
 			import('@social-networking/shared-ui').then((m) => m.NotFoundComponent)
-	}
+	},
 ];

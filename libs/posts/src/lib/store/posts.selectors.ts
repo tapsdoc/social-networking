@@ -12,16 +12,6 @@ export const selectPostsLoaded = createSelector(
 	(state: PostsState) => state.loaded
 );
 
-export const selectPostsError = createSelector(
-	selectPostsState,
-	(state: PostsState) => state.error
-);
-
-export const selectPostsIsLoading = createSelector(
-	selectPostsState,
-	(state: PostsState) => state.isLoading
-);
-
 export const selectAllPosts = createSelector(
 	selectPostsState,
 	(state: PostsState) => selectAll(state)
@@ -43,12 +33,4 @@ export const selectPost = createSelector(
 	(posts, selectedId) => (
 		selectedId ? posts[selectedId] : undefined
 	)
-);
-
-export const selectPostList = createSelector(
-	selectAllPosts,
-	selectPostsIsLoading,
-	(posts, isLoading) => ({
-		posts, isLoading
-	})
 );

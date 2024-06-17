@@ -1,4 +1,4 @@
-import { ApplicationConfig, isDevMode, provideZoneChangeDetection } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, isDevMode, provideZoneChangeDetection } from '@angular/core';
 import {
 	provideRouter,
 	withEnabledBlockingInitialNavigation
@@ -10,22 +10,34 @@ import {
 	withInterceptors
 } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideStore } from '@ngrx/store';
+import { provideState, provideStore, Store } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
-import * as fromAuth from '@social-networking/auth';
-import * as fromPosts from '@social-networking/posts';
-import * as fromUsers from '@social-networking/users';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideRouterStore } from '@ngrx/router-store';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import * as fromAuth from '@social-networking/auth';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import * as fromShared from '@social-networking/shared-ui';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AuthEffects } from '@social-networking/auth';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
-		provideEffects(),
+		provideState(fromShared.SHARED_FEATURE_KEY, fromShared.sharedReducer),
+		provideState(fromAuth.AUTH_FEATURE_KEY, fromAuth.authReducer),
+		provideEffects(AuthEffects),
 		provideStore({
 			[fromAuth.AUTH_FEATURE_KEY]: fromAuth.authReducer,
-			[fromPosts.POSTS_FEATURE_KEY]: fromPosts.postsReducer,
-			[fromUsers.USERS_FEATURE_KEY]: fromUsers.usersReducer,
+			[fromShared.SHARED_FEATURE_KEY]: fromShared.sharedReducer,
 		}),
+		{
+			provide: APP_INITIALIZER,
+			useFactory: (store: Store<fromAuth.AuthState>) => () => {
+				store.dispatch(fromAuth.initAutoLogin());
+			},
+			deps: [Store],
+			multi: true,
+		},
 		provideRouterStore(),
 		provideStoreDevtools({
 			maxAge: 25, // Retains last 25 states

@@ -1,11 +1,5 @@
 <section class="dark:bg-gray-900">
   <div class=" py-8 px-4 mx-auto max-w-2xl lg:py-16">
-    <div *ngIf="type !== ''" class="flex mt-10 justify-center fixed top-0 left-3 w-full">
-      <lib-snackbar
-        [type]="type"
-        [message]="error"
-      ></lib-snackbar>
-    </div>
     <div class="bg-white shadow-md rounded-md p-4">
       <h2 class="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
         {{ editMode ? 'Update post' : 'Add post' }}

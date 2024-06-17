@@ -53,7 +53,7 @@ export const editPostSuccess = createAction(
 export const addPostSuccess = createAction(
 	'[Posts] Add Post Success',
 	props<{ post: PostsEntity }>()
-)
+);
 
 export const loadPostsSuccess = createAction(
 	'[Posts] Load Posts Success',
@@ -63,13 +63,7 @@ export const loadPostsSuccess = createAction(
 export const loadPostSuccess = createAction(
 	'[Posts] Load Post Success',
 	props<{ post: PostsEntity }>()
-)
-
-export const loadPostsFailure = createAction(
-  '[Posts] Error',
-  props<{ error: HttpErrorResponse }>()
 );
 
-export const clearError = createAction(
-	'[Posts] Clear Error',
-);
+export class clearError {
+}
