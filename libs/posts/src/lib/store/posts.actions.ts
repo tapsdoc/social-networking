@@ -1,6 +1,5 @@
 import { createAction, props } from '@ngrx/store';
 import { PostCreateEntity, PostsEntity, PostUpdateEntity } from './posts.models';
-import { HttpErrorResponse } from '@angular/common/http';
 
 export const initPosts = createAction('[Posts Page] Init');
 

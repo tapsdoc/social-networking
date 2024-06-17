@@ -24,15 +24,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
 	
 	ngOnInit() {
 		this.subs = this.store.select(selectUser)
-		.subscribe({
-			next: (user) => {
-				if (user) {
-					this.isLoggedIn = !!user;
-					if (user.access_token)
-						this.username = this.decoder.decodeToken(user.access_token)?.sub;
+			.subscribe({
+				next: (user) => {
+					if (user) {
+						this.isLoggedIn = !!user;
+						if (user.access_token)
+							this.username = this.decoder.decodeToken(user.access_token)?.sub;
+					}
 				}
-			}
-		});
+			});
 	}
 	
 	onLogout() {
