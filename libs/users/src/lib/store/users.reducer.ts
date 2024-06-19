@@ -1,4 +1,3 @@
-import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import { createReducer, on, Action } from '@ngrx/store';
 
 import * as UsersActions from './users.actions';
@@ -6,37 +5,57 @@ import { UsersEntity } from './users.models';
 
 export const USERS_FEATURE_KEY = 'users';
 
-export interface UsersState extends EntityState<UsersEntity> {
-  selectedId?: string | number; // which Users record has been selected
-  loaded: boolean; // has the Users list been loaded
-  error?: string | null; // last known error (if any)
+export interface UsersState {
+	users: UsersEntity[];
+	user?: UsersEntity;
+	selectedId?: string; // which Users record has been selected
+	loaded: boolean; // has the Users list been loaded
 }
 
 export interface UsersPartialState {
-  readonly [USERS_FEATURE_KEY]: UsersState;
+	readonly [USERS_FEATURE_KEY]: UsersState;
 }
 
-export const usersAdapter: EntityAdapter<UsersEntity> =
-  createEntityAdapter<UsersEntity>();
-
-export const initialUsersState: UsersState = usersAdapter.getInitialState({
-  // set initial required properties
-  loaded: false,
-});
+export const initialUsersState: UsersState = {
+	users: [],
+	loaded: false
+}
 
 const reducer = createReducer(
-  initialUsersState,
-  on(UsersActions.initUsers, (state) => ({
-    ...state,
-    loaded: false,
-    error: null,
-  })),
-  on(UsersActions.loadUsersSuccess, (state, { users }) =>
-    usersAdapter.setAll(users, { ...state, loaded: true })
-  ),
-  on(UsersActions.loadUsersFailure, (state, { error }) => ({ ...state, error }))
+	initialUsersState,
+	on(UsersActions.initUsers, (state) => ({
+		...state,
+		loaded: false
+	})),
+	on(UsersActions.initDeleteUser, (state, { username }) => ({
+		...state,
+		selectedId: username
+	})),
+	on(UsersActions.initGetUser, (state, { username }) => ({
+		...state,
+		selectedId: username
+	})),
+	on(UsersActions.loadUsersSuccess, (state, { users }) => ({
+		...state,
+		users: users,
+		loaded: true
+	})),
+	on(UsersActions.getUserSuccess, (state, { user }) => ({
+		...state,
+		user: user,
+		loaded: true,
+		selectedId: undefined
+	})),
+	on(UsersActions.deleteUserSuccess, (state) => {
+		const users: UsersEntity[] = state.users.filter(user => user.username !== state.selectedId);
+		return {
+			...state,
+			users: users,
+			selectedId: undefined
+		}
+	}),
 );
 
 export function usersReducer(state: UsersState | undefined, action: Action) {
-  return reducer(state, action);
+	return reducer(state, action);
 }

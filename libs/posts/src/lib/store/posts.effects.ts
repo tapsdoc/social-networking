@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { createEffect, Actions, ofType } from '@ngrx/effects';
-import { catchError, of, map, exhaustMap, take, tap, mergeMap, switchMap, concatMap } from 'rxjs';
+import { catchError, of, map, exhaustMap, tap, mergeMap, switchMap, concatMap } from 'rxjs';
 import * as PostsActions from './posts.actions';
 import { PostsService } from '@social-networking/services';
 import { Router } from '@angular/router';
@@ -22,7 +22,6 @@ export class PostsEffects {
 			ofType(PostsActions.initPosts),
 			switchMap(() => this.postsService.getAllPostsPostsGet()
 			.pipe(
-				take(1),
 				map(posts => {
 					this.store.dispatch(fromShared.setIsLoading({ status: false }));
 					this.store.dispatch(fromShared.setError({ error: undefined }));

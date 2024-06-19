@@ -17,25 +17,18 @@ import { JwtDecoderService } from '@social-networking/services';
 export class NavbarComponent implements OnInit, OnDestroy {
 	
 	username!: string;
-	isLoggedIn = false;
 	isOpen = false;
+	isNavbarOpen = false;
+	isServer = false;
+	isUser = signal(false);
+	
 	private subs!: Subscription;
 	private store = inject(Store<AuthState>);
 	private decoder = inject(JwtDecoderService);
-	isServer = false;
-	isUser = signal(false);
 	private platformId = inject(PLATFORM_ID);
 	
 	constructor() {
 		this.isServer = isPlatformServer(this.platformId);
-		this.store.select(selectUser).subscribe(
-			user => {
-				const isAuth = !!user;
-				if (isAuth) {
-					this.isUser.set(true);
-				}
-			}
-		);
 	}
 	
 	ngOnInit() {
@@ -43,9 +36,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
 			.subscribe({
 				next: (user) => {
 					if (user) {
-						this.isLoggedIn = !!user;
-						if (user.access_token)
+						if (user.access_token) {
 							this.username = this.decoder.decodeToken(user.access_token)?.sub;
+							this.isUser.set(true)
+						}
+					} else {
+						this.isUser.set(false);
 					}
 				}
 			});
@@ -58,6 +54,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
 	
 	toggle() {
 		this.isOpen = !this.isOpen;
+		this.isNavbarOpen = false;
+	}
+	
+	toggleNavbar() {
+		this.isNavbarOpen = !this.isNavbarOpen;
+		this.isOpen = false;
 	}
 	
 	ngOnDestroy() {

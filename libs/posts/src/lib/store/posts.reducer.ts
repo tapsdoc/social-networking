@@ -36,7 +36,6 @@ const reducer = createReducer(
 	})),
 	on(
 		PostsActions.initGetPost,
-		PostsActions.initEditPost,
 		PostsActions.initDeletePost,
 		PostsActions.initUpvote,
 		PostsActions.initDownvote,
@@ -44,6 +43,11 @@ const reducer = createReducer(
 		...state,
 		selectedId: id,
 		loaded: false,
+	})),
+	on(PostsActions.initEditPost, (state, { id, payload }) => ({
+		...state,
+		selectedId: id,
+		post: payload
 	})),
 	on(PostsActions.loadPostSuccess, (state, { post }) =>
 		postsAdapter.setOne(post, {

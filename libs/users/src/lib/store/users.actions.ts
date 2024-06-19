@@ -3,12 +3,24 @@ import { UsersEntity } from './users.models';
 
 export const initUsers = createAction('[Users Page] Init');
 
-export const loadUsersSuccess = createAction(
-  '[Users/API] Load Users Success',
-  props<{ users: UsersEntity[] }>()
+export const initGetUser = createAction(
+	'[Users] Get User Init',
+	props<{ username: string }>()
 );
 
-export const loadUsersFailure = createAction(
-  '[Users/API] Load Users Failure',
-  props<{ error: any }>()
+export const initDeleteUser = createAction(
+	'[Users] Delete User Init',
+	props<{ username: string }>()
 );
+
+export const loadUsersSuccess = createAction(
+	'[Users] Load Users Success',
+	props<{ users: UsersEntity[] }>()
+);
+
+export const getUserSuccess = createAction(
+	'[Users] Get User Success',
+	props<{ user: UsersEntity }>()
+);
+
+export const deleteUserSuccess = createAction('[Users] Delete User Success');
