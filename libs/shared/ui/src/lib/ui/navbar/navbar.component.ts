@@ -1,8 +1,9 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { CommonModule, isPlatformServer } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { AuthState, logoutSuccess, selectUser } from '@social-networking/auth';
 import { JwtDecoderService } from '@social-networking/services';
 
@@ -21,6 +22,21 @@ export class NavbarComponent implements OnInit, OnDestroy {
 	private subs!: Subscription;
 	private store = inject(Store<AuthState>);
 	private decoder = inject(JwtDecoderService);
+	isServer = false;
+	isUser = signal(false);
+	private platformId = inject(PLATFORM_ID);
+	
+	constructor() {
+		this.isServer = isPlatformServer(this.platformId);
+		this.store.select(selectUser).subscribe(
+			user => {
+				const isAuth = !!user;
+				if (isAuth) {
+					this.isUser.set(true);
+				}
+			}
+		);
+	}
 	
 	ngOnInit() {
 		this.subs = this.store.select(selectUser)

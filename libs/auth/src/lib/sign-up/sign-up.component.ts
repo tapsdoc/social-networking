@@ -12,7 +12,8 @@ import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { AuthState } from '../store/auth.reducer';
 import { initSignup } from '../store/auth.actions';
-import { selectIsLoading, setIsLoading } from '@social-networking/shared-ui';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { selectIsLoading, setIsLoading, SharedState } from '@social-networking/shared-ui';
 
 @Component({
 	selector: 'lib-sign-up',
@@ -31,7 +32,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
 	isLoading = false;
 	private subs!: Subscription;
 	
-	constructor(private store: Store<AuthState>) { }
+	constructor(private store: Store<AuthState | SharedState>) { }
 	
 	ngOnInit() {
 		this.subs = this.store.select(selectIsLoading).subscribe(

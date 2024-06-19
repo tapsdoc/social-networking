@@ -22,7 +22,12 @@
           }
         ],
         "styles": ["apps/social-networking/src/styles.css"],
-        "scripts": []
+        "scripts": [],
+        "server": "apps/social-networking/src/main.server.ts",
+        "prerender": true,
+        "ssr": {
+          "entry": "apps/social-networking/server.ts"
+        }
       },
       "configurations": {
         "production": {

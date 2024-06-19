@@ -38,7 +38,7 @@
               tabindex="-1"
               id="menu-item-0"
             >Edit</a>
-            <a (click)="onDelete()" class="cursor-pointer block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-1">Delete</a>
+            <a (click)="onDelete(post.id)" class="cursor-pointer block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-1">Delete</a>
           </div>
         </div>
       </div>
@@ -56,7 +56,7 @@
   <div class="flex sm:mt-4 space-x-4 items-center justify-between text-gray-500">
     <div class="flex items-center space-x-2">
       <button
-        (click)="this.isVoted = !this.isVoted; onUpvoteOrDownvote()"
+        (click)="this.isVoted = !this.isVoted; onUpvoteOrDownvote(post.id)"
         class="flex justify-center items-center gap-2 px-2 hover:bg-gray-50 rounded-full p-1"
       >
         <svg *ngIf="isVoted" class="w-6 h-6 text-primary-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { LoadingComponent, selectIsLoading, SnackBarComponent } from '@social-networking/shared-ui';
+import { LoadingComponent, SharedState } from '@social-networking/shared-ui';
 import { Store } from '@ngrx/store';
 import { PostsState } from '../store/posts.reducer';
 import { selectPost } from '../store/posts.selectors';
@@ -17,7 +17,6 @@ import * as fromShared from '@social-networking/shared-ui';
 	imports: [
 		CommonModule,
 		ReactiveFormsModule,
-		SnackBarComponent,
 		LoadingComponent
 	],
 	templateUrl: './create-post.component.html',
@@ -36,7 +35,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 		private fb: FormBuilder,
 		private router: Router,
 		private route: ActivatedRoute,
-		private store: Store<PostsState>,
+		private store: Store<PostsState | SharedState>,
 	) { }
 	
 	ngOnInit() {
@@ -52,28 +51,18 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 						if (post) this.post = post;
 					});
 				}
-				
-				this.getPostState();
 				this.initForm();
 			}
 		);
 	}
-	
-	private getPostState() {
-		this.subs = this.store.select(selectIsLoading)
-		.subscribe({
-			next: (state) => {
-				this.isLoading = state;
-			}
-		});
-	}
-	
+
 	onSubmit() {
 		this.store.dispatch(fromShared.setIsLoading({ status: true }));
 		if (this.editMode) {
-			this.store.dispatch(initEditPost({
-				id: this.id,
-				payload: this.form.value
+			this.store.dispatch(
+				initEditPost({
+					id: this.id,
+					payload: this.form.value
 			}));
 		} else {
 			this.store.dispatch(initAddPost({ payload: this.form.value }));
@@ -101,6 +90,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 	}
 	
 	ngOnDestroy() {
-		this.subs.unsubscribe();
+		if (this.subs)
+			this.subs.unsubscribe();
 	}
 }

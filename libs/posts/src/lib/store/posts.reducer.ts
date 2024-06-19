@@ -7,7 +7,6 @@ import { PostsEntity } from './posts.models';
 export const POSTS_FEATURE_KEY = 'posts';
 
 export interface PostsState extends EntityState<PostsEntity> {
-	post: PostsEntity | null;
 	selectedId?: string | number;
 	loaded: boolean;
 }
@@ -20,7 +19,6 @@ export const postsAdapter: EntityAdapter<PostsEntity> =
 	createEntityAdapter<PostsEntity>();
 
 export const initialPostsState: PostsState = postsAdapter.getInitialState({
-	post: null,
 	loaded: false
 });
 
@@ -30,7 +28,6 @@ const reducer = createReducer(
 		...state,
 		loaded: false,
 		selectedId: undefined,
-		post: null,
 	})),
 	on(PostsActions.loadPostsSuccess, (state, { posts }) =>
 		postsAdapter.setAll(posts, {
@@ -41,6 +38,8 @@ const reducer = createReducer(
 		PostsActions.initGetPost,
 		PostsActions.initEditPost,
 		PostsActions.initDeletePost,
+		PostsActions.initUpvote,
+		PostsActions.initDownvote,
 		(state, { id }) => ({
 		...state,
 		selectedId: id,
@@ -59,12 +58,11 @@ const reducer = createReducer(
 	on(PostsActions.addPostSuccess, (state, { post }) => ({
 		...state,
 		post: post,
-		loaded: true
 	})),
 	on(PostsActions.editPostSuccess, (state, { post }) => ({
 		...state,
 		post: post,
-		loaded: true
+		selectedId: undefined,
 	})),
 	on(PostsActions.deletePostSuccess, (state ) => (
 		postsAdapter.removeOne(state.selectedId as number, {
@@ -72,10 +70,6 @@ const reducer = createReducer(
 			selectedId: undefined,
 		})
 	)),
-	on(PostsActions.initDownvote, PostsActions.initUpvote, (state, { id }) => ({
-		...state,
-		selectedId: id,
-	})),
 	on(PostsActions.upvoteSuccess, (state ) => {
 		
 		const postToUpdate = state.entities[state.selectedId as number];
@@ -88,9 +82,7 @@ const reducer = createReducer(
 				...state,
 				selectedId: undefined
 			});
-		} else {
-			return state;
-		}
+		} else return state;
 	}),
 	on(PostsActions.downvoteSuccess, (state ) => {
 		const postToUpdate = state.entities[state.selectedId as number];
@@ -103,9 +95,7 @@ const reducer = createReducer(
 				...state,
 				selectedId: undefined
 			});
-		} else {
-			return state;
-		}
+		} else return state;
 	}),
 );
 

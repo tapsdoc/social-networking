@@ -1,12 +1,15 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { initFlowbite } from 'flowbite';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { NavbarComponent, selectError, SnackBarComponent } from '@social-networking/shared-ui';
+import {
+	NavbarComponent,
+	selectError,
+	SharedState,
+	SnackBarComponent
+} from '@social-networking/shared-ui';
 import { Store } from '@ngrx/store';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { AuthState } from '@social-networking/auth';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -26,10 +29,13 @@ export class AppComponent implements OnInit {
 	title = 'social-networking';
 	error$!: Observable<string>;
 	
-	private store = inject(Store<AuthState>);
+	private store = inject(Store<SharedState>);
+	private platformId = inject(PLATFORM_ID);
 	
 	ngOnInit(): void {
-		initFlowbite();
-		this.error$ = this.store.select(selectError) as Observable<string>;
+		if (isPlatformBrowser(this.platformId)) {
+			initFlowbite();
+			this.error$ = this.store.select(selectError) as Observable<string>;
+		}
 	}
 }

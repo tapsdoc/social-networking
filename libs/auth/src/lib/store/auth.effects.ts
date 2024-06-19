@@ -6,8 +6,10 @@ import { Router } from '@angular/router';
 import { AuthResponseEntity } from './auth.models';
 import { Store } from '@ngrx/store';
 import * as AuthActions from './auth.actions';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import * as fromShared from '@social-networking/shared-ui';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthState } from './auth.reducer';
 
 @Injectable()
 export class AuthEffects {
@@ -15,7 +17,8 @@ export class AuthEffects {
 	private authService = inject(AuthService);
 	private router = inject(Router);
 	private decoder = inject(JwtDecoderService);
-	private store = inject(Store<fromShared.SharedState>);
+	private store = inject(Store<fromShared.SharedState | AuthState>);
+	private isLocalStorageAvailable = typeof localStorage !== 'undefined';
 	
 	login$ = createEffect(() =>
 		this.actions$.pipe(
@@ -47,7 +50,10 @@ export class AuthEffects {
 			this.actions$.pipe(
 				ofType(AuthActions.loginSuccess),
 				tap(({ payload }) => {
-					localStorage.setItem('user', JSON.stringify(payload));
+					
+					if (this.isLocalStorageAvailable) {
+						localStorage.setItem('user', JSON.stringify(payload));
+					}
 					this.router.navigate(['/posts']).then();
 					const now = new Date().getTime() / 1000;
 					const unixTimestamp: number =
@@ -99,8 +105,8 @@ export class AuthEffects {
 			this.actions$.pipe(
 				ofType(AuthActions.logoutSuccess),
 				tap(() => {
-					localStorage.removeItem('user');
-					this.router.navigate(['/login']).then();
+					this.router.navigate(['/login'])
+						.then(() => localStorage.removeItem('user'));
 				})
 			),
 		{ dispatch: false }
@@ -110,19 +116,22 @@ export class AuthEffects {
       this.actions$.pipe(
          ofType(AuthActions.initAutoLogin),
          tap(() => {
-            const user: AuthResponseEntity | null =
-               JSON.parse(localStorage.getItem('user') as string);
-            
-            if (user) {
-               const now = new Date().getTime() / 1000;
-               const unixTimestamp: number =
-                  this.decoder.decodeToken(user.access_token)?.exp;
-               
-               if (now > unixTimestamp) {
-                  this.store.dispatch(AuthActions.logoutSuccess());
-               }
-               this.store.dispatch(AuthActions.autoLoginSuccess({ payload: user }));
-            }
+				
+				if (this.isLocalStorageAvailable) {
+					const user: AuthResponseEntity | null =
+						JSON.parse(localStorage.getItem('user') as string);
+					if (user) {
+						const now = new Date().getTime() / 1000;
+						const unixTimestamp: number =
+							this.decoder.decodeToken(user.access_token)?.exp;
+						
+						if (now > unixTimestamp) {
+							this.store.dispatch(AuthActions.logoutSuccess());
+						} else {
+							this.store.dispatch(AuthActions.autoLoginSuccess({ payload: user }));
+						}
+					}
+				}
          })
       ),
 		{ dispatch: false }

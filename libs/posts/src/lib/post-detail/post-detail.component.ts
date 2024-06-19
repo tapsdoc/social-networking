@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { selectPost } from '../store/posts.selectors';
 import { PostsEntity } from '../store/posts.models';
 import { initGetPost } from '../store/posts.actions';
+import * as fromShared from '@social-networking/shared-ui';
 
 @Component({
 	selector: 'lib-post-detail',
@@ -23,7 +24,9 @@ export class PostDetailComponent implements OnInit, OnDestroy {
 	constructor(
 		private route: ActivatedRoute,
 		private store: Store<PostsState>
-	) { }
+	) {
+		this.store.dispatch(fromShared.setIsLoading({ status: true }));
+	}
 	
 	ngOnInit() {
 		this.route.params.subscribe(

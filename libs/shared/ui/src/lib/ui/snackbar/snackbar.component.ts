@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, inject, Input, OnInit, PLATFORM_ID } from '@angular/core';
 import { Dismiss, DismissInterface, DismissOptions, InstanceOptions } from 'flowbite';
 
 @Component({
@@ -16,13 +16,16 @@ export class SnackBarComponent implements OnInit {
 	@Input() type!: 'error' | 'success' | 'warn' | null;
 	@Input() message!: string | null;
 	protected snackbarTypes: SnackbarType[] = [];
+	private platformId = inject(PLATFORM_ID);
 	
 	constructor() {
 		this.snackbarTypes = snackbarTypes;
 	}
 	
 	ngOnInit() {
-		this.toggle();
+		if (isPlatformBrowser(this.platformId)) {
+			this.toggle();
+		}
 	}
 	
 	toggle() {
@@ -54,7 +57,7 @@ export interface SnackbarType {
 	classes: string;
 }
 
-export const snackbarTypes: SnackbarType[] = [
+const snackbarTypes: SnackbarType[] = [
 	{
 		name: 'info',
 		classes: 'flex items-center p-4 mb-4 text-sm text-blue-800 border border-blue-300 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800'

@@ -1,7 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PostsEntity } from '../../store/posts.models';
+import * as fromShared from '@social-networking/shared-ui';
+import { Store } from '@ngrx/store';
+import * as PostsActions from '../../store/posts.actions';
+import { PostsState } from '../../store/posts.reducer';
 
 @Component({
 	selector: 'lib-post-card',
@@ -13,30 +17,23 @@ import { PostsEntity } from '../../store/posts.models';
 export class PostCardComponent {
 	
 	@Input() post!: PostsEntity;
-	@Output() vote = new EventEmitter<{
-		id: number,
-		isVoted: boolean
-	}>();
-	@Output() delete = new EventEmitter<number>();
 	isOpen = false;
 	isVoted = false;
 	
 	constructor(
 		private router: Router,
 		private route: ActivatedRoute,
+		private store: Store<PostsState>
 	) { }
 	
-	toggleDropdown() {
-		this.isOpen = !this.isOpen;
-	}
-	
-	onUpvoteOrDownvote() {
+	onUpvoteOrDownvote(id: number) {
 		this.isVoted = !this.isVoted;
-		this.vote.emit({
-			id: this.post.id,
-			isVoted: !this.isVoted
-		});
-		console.log(this.isVoted);
+		this.store.dispatch(fromShared.setIsLoading({ status: true }));
+		if (this.isVoted) {
+			this.store.dispatch(PostsActions.initUpvote({ id: id }));
+		} else {
+			this.store.dispatch(PostsActions.initDownvote({ id: id }));
+		}
 	}
 	
 	onSelect() {
@@ -53,8 +50,13 @@ export class PostCardComponent {
 		).then();
 	}
 	
-	onDelete() {
-		this.delete.emit(this.post.id);
+	onDelete(id: number) {
+		this.store.dispatch(fromShared.setIsLoading({ status: true }));
+		this.store.dispatch(PostsActions.initDeletePost({ id: id }));
 		this.toggleDropdown();
+	}
+	
+	toggleDropdown() {
+		this.isOpen = !this.isOpen;
 	}
 }
