@@ -20,7 +20,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 	isOpen = false;
 	isNavbarOpen = false;
 	isServer = false;
-	isUser = signal(false);
+	isAuthenticated = signal(false);
 	
 	private subs!: Subscription;
 	private store = inject(Store<AuthState>);
@@ -38,10 +38,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 					if (user) {
 						if (user.access_token) {
 							this.username = this.decoder.decodeToken(user.access_token)?.sub;
-							this.isUser.set(true)
+							this.isAuthenticated.set(true)
 						}
 					} else {
-						this.isUser.set(false);
+						this.isAuthenticated.set(false);
 					}
 				}
 			});

@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@social-networking/auth": ["libs/auth/src/index.ts"],
+      "@social-networking/components": ["libs/components/src/index.ts"],
       "@social-networking/post-detail": ["libs/post-detail/src/index.ts"],
       "@social-networking/posts": ["libs/posts/src/index.ts"],
       "@social-networking/services": ["libs/services/src/index.ts"],

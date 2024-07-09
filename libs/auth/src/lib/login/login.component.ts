@@ -19,7 +19,7 @@ import { selectUser } from '../store/auth.selectors';
 		RouterLink
 	],
 	templateUrl: './login.component.html',
-	styleUrl: './login.component.css'
+	styleUrl: './login.component.css',
 })
 export class LoginComponent implements OnInit, OnDestroy {
 	

@@ -10,7 +10,7 @@ export const userRoutes: Route[] = [
 	{
 		path: '',
 		component: UsersComponent,
-		canActivate: [authGuard],
+		canActivate: [],
 		children: [
 			{
 				path: '',
